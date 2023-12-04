@@ -21,6 +21,7 @@ class ActivityIndicatorManager{
     func showActivityIndicator() {
         if let keyWindow = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) {
             activityIndicator.center = keyWindow.center
+            activityIndicator.color = .systemBlue
             activityIndicator.startAnimating()
             keyWindow.addSubview(activityIndicator)
         }

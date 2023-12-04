@@ -23,7 +23,7 @@ class MovieDetailPresenter:MovieDetailPresentationLogic {
     
     func presentTrailer(response: MovieDetailModel.FetchTrailer.Response) {
         let viewModel = MovieDetailViewModels.MovieTrailerViewModel(trailers: response.trailer)
-        movieDetailViewController?.displayTrailer(vieModel: viewModel)
+        movieDetailViewController?.displayTrailer(viewModel: viewModel)
     }
     
     

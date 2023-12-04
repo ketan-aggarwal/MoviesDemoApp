@@ -107,10 +107,12 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
     }
 
     @objc func popularMoviesSelected() {
+        ActivityIndicatorManager.shared.showActivityIndicator()
         currentPage = 1
         navigationItem.title = "Popular Movies"
         let popuralUrl = "https://api.themoviedb.org/3/discover/movie?api_key=\(apiKey)&page=\(currentPage)"
         fetchMovies(apiKey: apiKey,url: popuralUrl)
+        ActivityIndicatorManager.shared.hideActivityIndicator()
         print("Popular Movies selected")
        
        
@@ -152,6 +154,7 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
             if self.currentPage == 1 {
                 // Replace the existing movies array with the new movies
                 self.movies = viewModel.movies
+            
             } else {
                 // Append the new movies to the existing array
                 self.movies?.append(contentsOf: viewModel.movies)

@@ -6,20 +6,53 @@
 //
 
 import Foundation
+import CoreData
 
 protocol MovieListWorkingLogic {
     func fetchMovies(apiKey:String, currentPage:Int, url: String,completion: @escaping ([Movie]?)->Void)
     func fetchConfiguration(apiKey:String, completion: @escaping (ImageConfiguration?)->Void)
+    func saveMoviesToCoreData(movies:[Movie])
+    func fetchMoviesFromCoreData(completion: @escaping ([Movie]?) -> Void)
 }
 
 class MovieListWorker: MovieListWorkingLogic {
     
+    func saveMoviesToCoreData(movies:[Movie]) {
+        let context = CoreDataStack.shared.managedObjectContext
+        for movie in movies {
+            let movieEntity = MovieEntity(context: context)
+            movieEntity.id = Int64(movie.id ?? 0)
+                      movieEntity.title = movie.title
+                      movieEntity.overview = movie.overview
+                      movieEntity.vote_average = movie.vote_average ?? 0.0
+                      movieEntity.imageUrl = movie.poster_path
+            print("imageURL\(movieEntity.imageUrl)")
+        }
+        CoreDataStack.shared.saveContext()
+    }
     
+    func fetchMoviesFromCoreData(completion: @escaping ([Movie]?) -> Void) {
+        let context = CoreDataStack.shared.managedObjectContext
+                let fetchRequest: NSFetchRequest<MovieEntity> = MovieEntity.fetchRequest()
+
+                do {
+                    let movieEntities = try context.fetch(fetchRequest)
+                    let movies = movieEntities.map { Movie(
+                        title: $0.title,
+                                overview: $0.overview,
+                                vote_average: $0.vote_average,
+                                poster_path: $0.imageUrl,
+                                id: Int64($0.id)
+                    ) }
+                    completion(movies)
+                } catch {
+                    print("Error fetching movies from Core Data: \(error)")
+                    completion(nil)
+                }
+    }
 
     func fetchMovies(apiKey: String, currentPage: Int,url: String, completion: @escaping ([Movie]?) -> Void) {
-//        let url = URL(string: "https://api.themoviedb.org/3/discover/movie?api_key=\(apiKey)&page=\(currentPage)")!
         let url = URL(string:url)!
-
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
             DispatchQueue.main.async {
                 if let data = data {

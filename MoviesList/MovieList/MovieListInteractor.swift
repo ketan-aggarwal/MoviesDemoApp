@@ -47,21 +47,48 @@ class MovieListInteractor: MovieBusinessLogic, MovieListDataStore {
 
 
     
-    func fetchMovies(request: MovieListModels.FetchMovies.Request, url:String) {
-        worker.fetchMovies(apiKey: apiKey, currentPage: currentPage, url: url) { [weak self] movies in
-                guard let self = self else { return }
-                self.movies = movies
-                
+//    func fetchMovies(request: MovieListModels.FetchMovies.Request, url:String) {
+//        worker.fetchMovies(apiKey: apiKey, currentPage: currentPage, url: url) { [weak self] movies in
+//                guard let self = self else { return }
+//                self.movies = movies
+//
+//
+//                if let firstMovie = movies?.first {
+//                    self.selectedMovie = firstMovie
+//                    self.setMovieData(firstMovie)
+//                    print("Selected Movie: \(String(describing: self.selectedMovie))")
+//                }
+//
+//                let response = MovieListModels.FetchMovies.Response(movies: movies ?? [])
+//                self.presenter?.presentFetchMovies(response: response)
+//            }
+//        }
+    
+    func fetchMovies(request: MovieListModels.FetchMovies.Request, url: String) {
            
-                if let firstMovie = movies?.first {
-                    self.selectedMovie = firstMovie
-                    // Set the selected movie in the dataStore
-                    self.setMovieData(firstMovie)
-                    print("Selected Movie: \(String(describing: self.selectedMovie))")
-                }
+        worker.fetchMoviesFromCoreData { [weak self] coreDataMovies in
+                guard let self = self else { return }
+                
+                if let coreDataMovies = coreDataMovies, !coreDataMovies.isEmpty {
+                    print("cdbvuivguhiohihhvrihvrihvrihvirhvirvhirhv")
+                    let response = MovieListModels.FetchMovies.Response(movies: coreDataMovies)
+                    self.presenter?.presentFetchMovies(response: response)
+                } else {
+                    
+                    self.worker.fetchMovies(apiKey: self.apiKey, currentPage: self.currentPage, url: url) { [weak self] networkMovies in
+                        guard let self = self else { return }
+                        self.movies = networkMovies
 
-                let response = MovieListModels.FetchMovies.Response(movies: movies ?? [])
-                self.presenter?.presentFetchMovies(response: response)
+                        // Save the fetched movies to Core Data
+                        if let networkMovies = networkMovies {
+                            self.worker.saveMoviesToCoreData(movies: networkMovies)
+                            print("movies getting saved or not")
+                        }
+
+                        let response = MovieListModels.FetchMovies.Response(movies: networkMovies ?? [])
+                        self.presenter?.presentFetchMovies(response: response)
+                    }
+                }
             }
         }
         

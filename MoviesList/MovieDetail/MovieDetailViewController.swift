@@ -10,10 +10,10 @@ import youtube_ios_player_helper
 
 protocol MovieDetailDisplayLogic {
     func displayMovieInfo(viewModel: MovieDetailViewModels.MovieInfoViewModel)
-    func displayTrailer(vieModel: MovieDetailViewModels.MovieTrailerViewModel)
+    func displayTrailer(viewModel: MovieDetailViewModels.MovieTrailerViewModel)
 }
 
-class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UITableViewDelegate, UITableViewDataSource,YTPlayerViewDelegate{
+class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UITableViewDelegate, UITableViewDataSource,YTPlayerViewDelegate, CAAnimationDelegate{
     
     var dataStore: MovieDetailDataStoreImp?
     var isLiked = false
@@ -119,6 +119,47 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
         presenter.movieDetailViewController = movieDetailviewController
     }
     
+//    func startMarqueeAnimation() {
+//        let duration: TimeInterval = TimeInterval(tagLabel.intrinsicContentSize.width / 25)
+//
+//           // Create the marquee animation
+//           let animation = CABasicAnimation(keyPath: "position.x")
+//           animation.fromValue = tagLabel.layer.position.x
+//           animation.toValue = -tagLabel.intrinsicContentSize.width
+//           animation.duration = duration
+//           animation.repeatCount = .infinity
+//           animation.autoreverses = false
+//           // Apply the animation to the label's layer
+//           tagLabel.layer.add(animation, forKey: "marqueeAnimation")
+//    }
+//
+    func startMarqueeAnimation() {
+        let duration: TimeInterval = TimeInterval(tagLabel.intrinsicContentSize.width / 25)
+
+        // Create the marquee animation
+        let animation = CABasicAnimation(keyPath: "position.x")
+        animation.fromValue = tagLabel.layer.position.x
+        animation.toValue = -tagLabel.intrinsicContentSize.width
+        animation.duration = duration
+        animation.delegate = self
+        animation.autoreverses = false
+        animation.isRemovedOnCompletion = false
+        animation.fillMode = .forwards
+
+        // Apply the animation to the label's layer
+        tagLabel.layer.add(animation, forKey: "marqueeAnimation")
+    }
+    func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
+        // Restart the marquee animation
+        if flag {
+            startMarqueeAnimation()
+        }
+    }
+    
+    func stopMarqueeAnimation() {
+        tagLabel.layer.removeAnimation(forKey: "marqueeAnimation")
+    }
+    
     var labels: [String] = ["Languages:","Revenue:","Runtime:","Release Date:","Production Countries:"]
     var values: [String?] = [nil,nil,nil,nil,nil]
     
@@ -141,23 +182,61 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
             "\((viewModel.movieInfo.revenue).map{ String($0/1000000) } ?? "Nil") Mil.",
             "\((viewModel.movieInfo.runtime).map{ String($0) } ?? "Nil") Min.",
             viewModel.movieInfo.release_date,
-            viewModel.movieInfo.production_countries?.first?.name ?? "N/A"
-            
+            viewModel.movieInfo.production_countries?.first?.name ?? "N/A",
         ]
+        
         DispatchQueue.main.async {
             self.detailTable.reloadData()
         }
     }
+
     
-    func displayTrailer(vieModel: MovieDetailViewModels.MovieTrailerViewModel){
-        if let trailer = vieModel.trailers.first, let key = trailer.key {
+//    func displayTrailer(viewModel: MovieDetailViewModels.MovieTrailerViewModel) {
+//        DispatchQueue.main.async {
+//            ActivityIndicatorManager.shared.showActivityIndicator()
+//        }
+//
+//        DispatchQueue.global().async {
+//            if let trailer = viewModel.trailers.first, let key = trailer.key {
+//                print("YouTube Video ID: \(key)")
+//                DispatchQueue.main.async { [weak self] in
+//                    self?.playerView.load(withVideoId: key)
+//                }
+//                self.startMarqueeAnimation()
+//            } else {
+//                print("Invalid trailer key")
+//            }
+//        }
+//    }
+    func displayTrailer(viewModel: MovieDetailViewModels.MovieTrailerViewModel){
+        DispatchQueue.main.async {
+               ActivityIndicatorManager.shared.showActivityIndicator()
+           }
+        if let trailer = viewModel.trailers.first, let key = trailer.key {
             print("YouTube Video ID: \(key)")
-            DispatchQueue.main.async { [weak self] in
-                self?.playerView.load(withVideoId: key)
-            }
+           
+                DispatchQueue.main.async { [weak self] in
+                    self?.playerView.load(withVideoId: key)
+                    
+                }
+            
+
+           startMarqueeAnimation()
         } else {
             print("Invalid trailer key")
         }
+    }
+    
+    
+    func playerViewDidBecomeReady(_ playerView: YTPlayerView) {
+        DispatchQueue.main.async {
+            ActivityIndicatorManager.shared.hideActivityIndicator()
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        stopMarqueeAnimation()
     }
 }
 

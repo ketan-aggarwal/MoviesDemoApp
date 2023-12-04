@@ -15,6 +15,14 @@ struct Movie: Codable {
     let vote_average: Double?
     let poster_path: String?
     let id: Int64?
+    
+//    init(title: String?, overview: String?, vote_average: Double?, poster_path: String?, id: Int64?) {
+//            self.title = title
+//            self.overview = overview
+//            self.vote_average = vote_average
+//            self.poster_path = poster_path
+//            self.id = id
+//        }
 }
 
 struct MovieResponse: Codable {
