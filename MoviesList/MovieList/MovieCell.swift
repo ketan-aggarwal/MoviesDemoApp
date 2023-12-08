@@ -35,8 +35,8 @@ class MovieCell: UITableViewCell{
         
         let gradientLayer = CAGradientLayer()
         gradientLayer.frame = sepView.bounds
-        let topColor = UIColor.systemPink.cgColor
-        let bottomColor = UIColor.systemTeal.cgColor
+        let topColor = UIColor.systemBlue.cgColor
+        let bottomColor = UIColor.black.cgColor
         gradientLayer.colors = [topColor,bottomColor]
         gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
         gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)

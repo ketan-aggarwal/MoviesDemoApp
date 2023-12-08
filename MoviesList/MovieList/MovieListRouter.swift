@@ -29,8 +29,6 @@ class MovieListRouter: MovieListRoutingLogic, MovieListDataPassing {
     func navigateToMovieDetail(movie: Movie) {
                 if let movieDetailViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MovieDetailViewController") as? MovieDetailViewController {
                     
-                           //passMovieData(movie)
-                    
                     let dataStore = MovieDetailDataStoreImp()
                     dataStore.setupDataStore(movie, apiKey: "e3d053e3f62984a4fa5d23b83eea3ce6")
                     let router = MovieDetailRouter(viewController: movieDetailViewController, dataStore: dataStore)
@@ -41,10 +39,6 @@ class MovieListRouter: MovieListRoutingLogic, MovieListDataPassing {
                     viewController?.navigationController?.pushViewController(movieDetailViewController, animated: true)
                 }
     }
-    
-            
-         
-    
     
     func passMovieData(_ movie: Movie) {
         dataStore?.selectedMovie = movie

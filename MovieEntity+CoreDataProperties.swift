@@ -2,7 +2,7 @@
 //  MovieEntity+CoreDataProperties.swift
 //  
 //
-//  Created by Ketan Aggarwal on 15/11/23.
+//  Created by Ketan Aggarwal on 07/12/23.
 //
 //
 

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -28,13 +29,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                    attributes[.shadow] = shadow
                    UINavigationBar.appearance().titleTextAttributes = attributes
                }
-        
-           
+      
+        print("Documents Directory: ", FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last ?? "Not Found!")
+        clearAllData()
         return true
     }
 
     // MARK: UISceneSession Lifecycle
 
+    func clearAllData() {
+        let context = CoreDataStack.shared.managedObjectContext // Replace with your Core Data stack
+
+        // Create a fetch request for all entities in your Core Data model
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "MovieEntity")
+
+        // Create a batch delete request with the fetch request
+        let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+
+        do {
+            // Execute the batch delete request
+            try context.execute(batchDeleteRequest)
+
+            // Save the context to persist the changes
+            try context.save()
+        } catch {
+            print("Error clearing Core Data: \(error.localizedDescription)")
+        }
+    }
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         // Called when a new scene session is being created.
         // Use this method to select a configuration to create the new scene with.

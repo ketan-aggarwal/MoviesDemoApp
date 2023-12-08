@@ -10,9 +10,6 @@ import Foundation
 protocol MovieDetailDataStore{
     func setupDataStore(_ movie: Movie, apiKey: String)
     var apiKey: String { get set }
-    //var movieID: Int { get set }
-//    var trailer: [MovieTrailer]? { get set }
-//    var movieInfo: MovieInfo? { get set }
     var selectedMovie: Movie? {get set}
     
 }

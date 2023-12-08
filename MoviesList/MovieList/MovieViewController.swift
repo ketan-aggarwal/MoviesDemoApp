@@ -3,7 +3,8 @@
 //  MoviesList
 //
 //  Created by Ketan Aggarwal on 16/11/23.
-//
+
+
 
 import UIKit
 import SDWebImage
@@ -28,7 +29,7 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
     var configuration : ImageConfiguration?
     var interactor: MovieListInteractor?
     var router: MovieListRouter?
-   
+    
     
     let button = UIButton()
     
@@ -36,14 +37,16 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         super.viewDidLoad()
         setupTable()
         setup()
-       setupButton()
-       popularMoviesSelected()
+        setupButton()
+        popularMoviesSelected()
         fetchConfiguration(apiKey: apiKey)
         //fetchMovies(apiKey: apiKey)
+        self.view.tintColor = .white
         configureBarBtn()
+        
     }
     
-    private func setup() {
+    private func setup() {    //start point
         let viewController = self
         let presenter = MoviePresenter()
         let interactor = MovieListInteractor(presenter: presenter)
@@ -69,20 +72,22 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
         myTable.tableFooterView = button
     }
-
+    
     func configureBarBtn() {
         let optionsButton = UIButton(type: .system)
         optionsButton.setTitle("Filter", for: .normal)
-        //optionsButton.setImage("Filter", for: .normal)
+        optionsButton.tintColor = .white
         optionsButton.addTarget(self, action: #selector(showOptions), for: .touchUpInside)
-
+        
         let optionsBarButton = UIBarButtonItem(customView: optionsButton)
         navigationItem.rightBarButtonItem = optionsBarButton
     }
-
+    
     @objc func showOptions(_ sender: UIButton) {
         let alertController = UIAlertController(title: "Select Option", message: nil, preferredStyle: .actionSheet)
-
+        
+        alertController.view.tintColor = UIColor.white
+        
         let popularAction = UIAlertAction(title: "Popular Movies", style: .default) { _ in
             self.popularMoviesSelected()
         }
@@ -90,22 +95,22 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         let upcomingAction = UIAlertAction(title: "Upcoming Movies", style: .default) { _ in
             self.upcomingMoviesSelected()
         }
-
+        alertController.view.tintColor = UIColor.white
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-
+        
         alertController.addAction(popularAction)
         alertController.addAction(upcomingAction)
         alertController.addAction(cancelAction)
-
+        
         if let popoverController = alertController.popoverPresentationController {
             popoverController.sourceView = sender
             popoverController.sourceRect = sender.bounds
             popoverController.permittedArrowDirections = .up
         }
-
+        
         present(alertController, animated: true, completion: nil)
     }
-
+    
     @objc func popularMoviesSelected() {
         ActivityIndicatorManager.shared.showActivityIndicator()
         currentPage = 1
@@ -114,10 +119,10 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         fetchMovies(apiKey: apiKey,url: popuralUrl)
         ActivityIndicatorManager.shared.hideActivityIndicator()
         print("Popular Movies selected")
-       
-       
+        
+        
     }
-
+    
     @objc func upcomingMoviesSelected() {
         currentPage = 1
         navigationItem.title = "Upcoming Movies"
@@ -126,18 +131,18 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         
         
     }
-
+    
     @objc func buttonTapped(){
         currentPage += 1
-           let url: String
-           if navigationItem.title == "Popular Movies" {
-               url = "https://api.themoviedb.org/3/discover/movie?api_key=\(apiKey)&page=\(currentPage)"
-           } else {
-               url = "https://api.themoviedb.org/3/movie/upcoming?api_key=\(apiKey)&page=\(currentPage)"
-           }
-
-           
-           fetchMovies(apiKey: apiKey, url: url)
+        let url: String
+        if navigationItem.title == "Popular Movies" {
+            url = "https://api.themoviedb.org/3/discover/movie?api_key=\(apiKey)&page=\(currentPage)"
+        } else {
+            url = "https://api.themoviedb.org/3/movie/upcoming?api_key=\(apiKey)&page=\(currentPage)"
+        }
+        
+        
+        fetchMovies(apiKey: apiKey, url: url)
     }
     
     func fetchMovies(apiKey: String,url:String){
@@ -148,17 +153,19 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         interactor!.fetchConfiguration(request: MovieListModels.FetchImageConfiguration.Request(apiKey: apiKey))
     }
     
-
+    
     func displayMovies(viewModel: MovieListViewModels.MovieListViewModel) {
         DispatchQueue.main.async {
             if self.currentPage == 1 {
                 // Replace the existing movies array with the new movies
                 self.movies = viewModel.movies
-            
+                
             } else {
                 // Append the new movies to the existing array
                 self.movies?.append(contentsOf: viewModel.movies)
             }
+           
+            print("Movies count after update: \(self.movies?.count ?? 0)")
             self.myTable.reloadData()
         }
     }
@@ -180,28 +187,19 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         cell.desc?.text = movie.overview
         cell.rating?.text = String(movie.vote_average!)
         
-        if let configuration = configuration, let posterPath = movie.poster_path {
-            
-            DispatchQueue.main.async {
-                if let fullPosterURL = URL(string: configuration.base_url)?
-                    .appendingPathComponent(configuration.poster_sizes[5])
-                    .appendingPathComponent(posterPath) {
-                    //print(fullPosterURL)
-                    cell.img.sd_setImage(with: fullPosterURL, placeholderImage: UIImage(named: "placeholderImage"))
-                }
-            }
-            
+        if let url = interactor?.getUrlFor(posterPath: movie.poster_path) {
+            cell.img.sd_setImage(with: url, placeholderImage: UIImage(named: "placeholderImage"))
         }
         return cell
     }
-    
+    //we can store the configuration locally
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let selectedMovie = movies?[indexPath.row] {
             passMovieData(selectedMovie)
             
         }
-       
+        
     }
     
     func passMovieData(_ movie: Movie) {

@@ -10,6 +10,7 @@ import Foundation
 protocol MovieDetailPresentationLogic {
     func presentFetchInfo(response: MovieDetailModel.FetchInfo.Response)
     func presentTrailer(response: MovieDetailModel.FetchTrailer.Response)
+    func presentLikedStateChange(isLiked: Bool)
 }
 
 class MovieDetailPresenter:MovieDetailPresentationLogic {
@@ -26,5 +27,7 @@ class MovieDetailPresenter:MovieDetailPresentationLogic {
         movieDetailViewController?.displayTrailer(viewModel: viewModel)
     }
     
-    
+    func presentLikedStateChange(isLiked: Bool) {
+            movieDetailViewController?.updateLikedState(isLiked: isLiked)
+        }
 }

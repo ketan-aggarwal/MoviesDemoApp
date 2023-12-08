@@ -10,7 +10,6 @@ import Foundation
 protocol MoviePresentationLogic{
     func presentFetchMovies(response: MovieListModels.FetchMovies.Response)
     func presentFetchedConfiguration(response: MovieListModels.FetchImageConfiguration.Response)
-    
 }
 
 class MoviePresenter: MoviePresentationLogic {
@@ -26,4 +25,6 @@ class MoviePresenter: MoviePresentationLogic {
            let viewModel = MovieListViewModels.ImageConfigurationViewModel(imageConfig: response.imageConfig)
            viewController?.displayConfiguration(viewModel: viewModel)
        }
+    
+    
 }

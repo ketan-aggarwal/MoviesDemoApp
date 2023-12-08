@@ -7,16 +7,18 @@
 
 import UIKit
 import youtube_ios_player_helper
+import CoreData
 
 protocol MovieDetailDisplayLogic {
     func displayMovieInfo(viewModel: MovieDetailViewModels.MovieInfoViewModel)
     func displayTrailer(viewModel: MovieDetailViewModels.MovieTrailerViewModel)
+    func updateLikedState(isLiked: Bool)
 }
 
 class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UITableViewDelegate, UITableViewDataSource,YTPlayerViewDelegate, CAAnimationDelegate{
     
     var dataStore: MovieDetailDataStoreImp?
-    var isLiked = false
+    public var isLiked = false
     var playerView:YTPlayerView!
     var interactor: MovieDetailBusinessLogic?
     var movieID: Int?
@@ -29,6 +31,23 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
     @IBOutlet weak var eyeBtn: UIButton!
     @IBOutlet weak var img: UIImageView!
     @IBOutlet weak var eyeImg: UIImageView!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setup()
+        setupPlayer()
+        updateLikeButtonAppearance()
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        self.navigationController?.navigationBar.tintColor = UIColor.white
+        eyeImg.image = UIImage(systemName: "eye")
+        eyeImg.tintColor = .white
+        let movieID =  (dataStore?.selectedMovie?.id ?? 0)
+        let request = MovieDetailModel.FetchInfo.Request(apiKey: "e3d053e3f62984a4fa5d23b83eea3ce6", movieID: Int(movieID))
+        interactor?.fetchMovieInfo(request: request)
+        interactor?.fetchTrailer(request: request)
+        detailTable.rowHeight = UITableView.automaticDimension
+        detailTable.separatorStyle = .none
+    }
     
     @IBAction func descBtn(_ sender: Any) {
         guard let overview = dataStore?.selectedMovie?.overview else {
@@ -58,40 +77,45 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
         animator.startAnimation()
     }
     
-    @IBAction func likeBtn(_ sender: Any) {
-        isLiked.toggle()
-        UserDefaults.standard.set(isLiked, forKey: "isLiked_\(dataStore?.selectedMovie?.id ?? 0)")
-        updateLikeButtonAppearance()
-        print("eihffc\(dataStore?.selectedMovie?.id)")
-    }
+    func updateLikedState(isLiked: Bool) {
+            // Implement your logic to update the UI based on the 'isLiked' state
+            // For example, you might want to update the appearance of your like button.
+            self.isLiked = isLiked
+           print("helllolll\(isLiked)")
+            updateLikeButtonAppearance()
+        }
     
+    @IBAction func likeBtn(_ sender: Any) {
+         isLiked.toggle()
+        updateLikeButtonAppearance()
+        
+        if var movieInfo = dataStore?.selectedMovie {
+            movieInfo.isLiked = isLiked
+            dataStore?.selectedMovie = movieInfo
+            
+            interactor?.updateLikedState(movieID: Int(movieInfo.id!), isLiked: isLiked)
+            updateLikeButtonAppearance()
+        }
+
+    }
+
     func updateLikeButtonAppearance() {
         if isLiked {
-            img.image = UIImage(systemName: "heart.fill")
-            likeBtn.tintColor = .red
+            DispatchQueue.main.async {
+                self.img.image = UIImage(systemName: "heart.fill")
+                self.likeBtn.tintColor = .red
+            }
+            
         } else {
-            img.image = UIImage(systemName: "heart")
-            likeBtn.tintColor = .red
+            DispatchQueue.main.async {
+                self.img.image = UIImage(systemName: "heart")
+                self.likeBtn.tintColor = .red
+            }
+           
         }
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setup()
-        setupPlayer()
-        img.image = UIImage(systemName: "heart")
-        eyeImg.image = UIImage(systemName: "eye")
-        if let selectedMovieID = dataStore?.selectedMovie?.id {
-            isLiked = UserDefaults.standard.bool(forKey: "isLiked_\(selectedMovieID)")
-        }
-        print("hiiiiiicccii\(dataStore?.selectedMovie?.id)")
-        let movieID =  (dataStore?.selectedMovie?.id ?? 0)
-        let request = MovieDetailModel.FetchInfo.Request(apiKey: "e3d053e3f62984a4fa5d23b83eea3ce6", movieID: Int(movieID))
-        interactor?.fetchMovieInfo(request: request)
-        interactor?.fetchTrailer(request: request)
-        detailTable.rowHeight = UITableView.automaticDimension
-        detailTable.separatorStyle = .none
-    }
+    
     
     func setupPlayer(){
         playerView = YTPlayerView()
@@ -119,46 +143,6 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
         presenter.movieDetailViewController = movieDetailviewController
     }
     
-//    func startMarqueeAnimation() {
-//        let duration: TimeInterval = TimeInterval(tagLabel.intrinsicContentSize.width / 25)
-//
-//           // Create the marquee animation
-//           let animation = CABasicAnimation(keyPath: "position.x")
-//           animation.fromValue = tagLabel.layer.position.x
-//           animation.toValue = -tagLabel.intrinsicContentSize.width
-//           animation.duration = duration
-//           animation.repeatCount = .infinity
-//           animation.autoreverses = false
-//           // Apply the animation to the label's layer
-//           tagLabel.layer.add(animation, forKey: "marqueeAnimation")
-//    }
-//
-    func startMarqueeAnimation() {
-        let duration: TimeInterval = TimeInterval(tagLabel.intrinsicContentSize.width / 25)
-
-        // Create the marquee animation
-        let animation = CABasicAnimation(keyPath: "position.x")
-        animation.fromValue = tagLabel.layer.position.x
-        animation.toValue = -tagLabel.intrinsicContentSize.width
-        animation.duration = duration
-        animation.delegate = self
-        animation.autoreverses = false
-        animation.isRemovedOnCompletion = false
-        animation.fillMode = .forwards
-
-        // Apply the animation to the label's layer
-        tagLabel.layer.add(animation, forKey: "marqueeAnimation")
-    }
-    func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
-        // Restart the marquee animation
-        if flag {
-            startMarqueeAnimation()
-        }
-    }
-    
-    func stopMarqueeAnimation() {
-        tagLabel.layer.removeAnimation(forKey: "marqueeAnimation")
-    }
     
     var labels: [String] = ["Languages:","Revenue:","Runtime:","Release Date:","Production Countries:"]
     var values: [String?] = [nil,nil,nil,nil,nil]
@@ -169,6 +153,7 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DetailCell", for: indexPath) as! DetailCell
+        cell.selectionStyle = .none
         cell.titleLabel.text = labels[indexPath.row]
         cell.valueLabel.text = values[indexPath.row] ?? "N/A"
         return cell
@@ -191,23 +176,7 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
     }
 
     
-//    func displayTrailer(viewModel: MovieDetailViewModels.MovieTrailerViewModel) {
-//        DispatchQueue.main.async {
-//            ActivityIndicatorManager.shared.showActivityIndicator()
-//        }
-//
-//        DispatchQueue.global().async {
-//            if let trailer = viewModel.trailers.first, let key = trailer.key {
-//                print("YouTube Video ID: \(key)")
-//                DispatchQueue.main.async { [weak self] in
-//                    self?.playerView.load(withVideoId: key)
-//                }
-//                self.startMarqueeAnimation()
-//            } else {
-//                print("Invalid trailer key")
-//            }
-//        }
-//    }
+
     func displayTrailer(viewModel: MovieDetailViewModels.MovieTrailerViewModel){
         DispatchQueue.main.async {
                ActivityIndicatorManager.shared.showActivityIndicator()
@@ -221,7 +190,7 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
                 }
             
 
-           startMarqueeAnimation()
+           //startMarqueeAnimation()
         } else {
             print("Invalid trailer key")
         }
@@ -236,8 +205,9 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        stopMarqueeAnimation()
+        //stopMarqueeAnimation()
     }
 }
+
 
 

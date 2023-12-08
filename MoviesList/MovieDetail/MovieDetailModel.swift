@@ -27,6 +27,7 @@ struct MovieInfo: Codable {
     let runtime: Int?
     let tagline: String?
     let release_date: String?
+    var isLiked: Bool?
 
 }
 

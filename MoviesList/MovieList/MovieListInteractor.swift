@@ -13,7 +13,6 @@ protocol MovieBusinessLogic {
     func fetchConfiguration(request : MovieListModels.FetchImageConfiguration.Request)
     func incrementCurrentPage() -> Int
 
-    
 }
 
 protocol MovieListDataStore {
@@ -47,50 +46,76 @@ class MovieListInteractor: MovieBusinessLogic, MovieListDataStore {
 
 
     
-//    func fetchMovies(request: MovieListModels.FetchMovies.Request, url:String) {
-//        worker.fetchMovies(apiKey: apiKey, currentPage: currentPage, url: url) { [weak self] movies in
-//                guard let self = self else { return }
-//                self.movies = movies
+//    func fetchMovies(request: MovieListModels.FetchMovies.Request, url: String) {
+//        worker.fetchMovies(apiKey: apiKey, currentPage: currentPage, url: url) { [weak self] newMovies in
+//            guard let self = self else { return }
 //
+//            if let newMovies = newMovies {
+//                if self.currentPage == 1 {
+//                    // Replace the existing movies array with the new movies
+//                    self.movies = newMovies
+//                } else {
+//                    // Append the new movies to the existing array
+//                    self.movies?.append(contentsOf: newMovies)
+//                }
 //
-//                if let firstMovie = movies?.first {
+//                if let firstMovie = newMovies.first {
 //                    self.selectedMovie = firstMovie
 //                    self.setMovieData(firstMovie)
 //                    print("Selected Movie: \(String(describing: self.selectedMovie))")
 //                }
 //
-//                let response = MovieListModels.FetchMovies.Response(movies: movies ?? [])
+//                let response = MovieListModels.FetchMovies.Response(movies: newMovies)
 //                self.presenter?.presentFetchMovies(response: response)
 //            }
 //        }
+//
+//    }
+//
     
-    func fetchMovies(request: MovieListModels.FetchMovies.Request, url: String) {
-           
-        worker.fetchMoviesFromCoreData { [weak self] coreDataMovies in
-                guard let self = self else { return }
-                
-                if let coreDataMovies = coreDataMovies, !coreDataMovies.isEmpty {
-                    print("cdbvuivguhiohihhvrihvrihvrihvirhvirvhirhv")
-                    let response = MovieListModels.FetchMovies.Response(movies: coreDataMovies)
-                    self.presenter?.presentFetchMovies(response: response)
-                } else {
-                    
-                    self.worker.fetchMovies(apiKey: self.apiKey, currentPage: self.currentPage, url: url) { [weak self] networkMovies in
-                        guard let self = self else { return }
-                        self.movies = networkMovies
+       func fetchMovies(request: MovieListModels.FetchMovies.Request, url: String) {
+        worker.fetchMoviesFromCoreData { [weak self] moviesFromCoreData in
+            guard let self = self else { return }
 
-                        // Save the fetched movies to Core Data
-                        if let networkMovies = networkMovies {
-                            self.worker.saveMoviesToCoreData(movies: networkMovies)
-                            print("movies getting saved or not")
+            if let moviesFromCoreData = moviesFromCoreData, !moviesFromCoreData.isEmpty {
+                // Update the movies array with the fetched movies from Core Data
+                self.movies = moviesFromCoreData
+
+                if let firstMovie = moviesFromCoreData.first {
+                    self.selectedMovie = firstMovie
+                    self.setMovieData(firstMovie)
+                    print("Selected Movie: \(String(describing: self.selectedMovie))")
+                }
+
+                let response = MovieListModels.FetchMovies.Response(movies: moviesFromCoreData)
+                self.presenter?.presentFetchMovies(response: response)
+            } else {
+                // No movies in Core Data, fetch from network
+                self.worker.fetchMovies(apiKey: self.apiKey, currentPage: self.currentPage, url: url) { [weak self] newMovies in
+                    guard let self = self else { return }
+
+                    if let newMovies = newMovies {
+                        // Save new movies to Core Data
+                        self.worker.saveMoviesToCoreData(movies: newMovies)
+
+                        // Update the movies array with the new movies
+                        self.movies = newMovies
+
+                        if let firstMovie = newMovies.first {
+                            self.selectedMovie = firstMovie
+                            self.setMovieData(firstMovie)
+                            print("Selected Movie: \(String(describing: self.selectedMovie))")
                         }
 
-                        let response = MovieListModels.FetchMovies.Response(movies: networkMovies ?? [])
+                        let response = MovieListModels.FetchMovies.Response(movies: newMovies)
                         self.presenter?.presentFetchMovies(response: response)
                     }
                 }
             }
         }
+    }
+    
+
         
         func fetchConfiguration(request: MovieListModels.FetchImageConfiguration.Request) {
             worker.fetchConfiguration(apiKey: apiKey) { [weak self] configuration in
@@ -106,7 +131,16 @@ class MovieListInteractor: MovieBusinessLogic, MovieListDataStore {
             }
         }
         
-        
+    func getUrlFor(posterPath: String?) -> URL?{
+        if let configuration = imageConfiguration,
+           let posterPath = posterPath,
+           let fullPosterURL = URL(string: configuration.base_url)?
+            .appendingPathComponent(configuration.poster_sizes[5])
+            .appendingPathComponent(posterPath){
+                    return fullPosterURL
+        }
+        return nil
+    }
         
         func incrementCurrentPage() -> Int{
             currentPage += 1
