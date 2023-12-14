@@ -9,6 +9,15 @@
 import Foundation
 
 // Data Models
+enum MovieCodingKeys: String, CodingKey {
+    case title
+    case overview
+    case voteAverage = "vote_average"
+    case posterPath = "poster_path"
+    case id
+    case isLiked
+}
+
 struct Movie: Codable {
     let title: String?
     let overview: String?
@@ -16,8 +25,8 @@ struct Movie: Codable {
     let poster_path: String?
     let id: Int64?
     var isLiked: Bool?
-    
-
+     
+   
 }
 
 struct MovieResponse: Codable {
@@ -47,8 +56,6 @@ enum MovieListModels {
             let movies: [Movie]
         }
     }
-
-   
 
     enum FetchImageConfiguration {
         struct Request {

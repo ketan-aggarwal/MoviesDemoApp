@@ -7,14 +7,19 @@
 
 import UIKit
 import CoreData
+import Firebase
+import GoogleSignIn
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
-
+    var window: UIWindow?
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
       
+        FirebaseApp.configure()
+        
+       // clearAllMoviesFromCoreData()
         let viewController = MovieViewController()
                if let font = UIFont(name: "HelveticaNeue-Light", size: 22) {
                    var attributes: [NSAttributedString.Key: Any] = [
@@ -31,29 +36,50 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                }
       
         print("Documents Directory: ", FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last ?? "Not Found!")
-        clearAllData()
+        
+        func application(
+          _ app: UIApplication,
+          open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+        ) -> Bool {
+          var handled: Bool
+
+          handled = GIDSignIn.sharedInstance.handle(url)
+          if handled {
+            return true
+          }
+          return false
+        }
+      
+        
+        func application(
+          _ application: UIApplication,
+          didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+        ) -> Bool {
+          GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
+            if error != nil || user == nil {
+              // Show the app's signed-out state.
+            } else {
+              // Show the app's signed-in state.
+            }
+          }
+          return true
+        }
         return true
     }
+   
 
     // MARK: UISceneSession Lifecycle
 
-    func clearAllData() {
-        let context = CoreDataStack.shared.managedObjectContext // Replace with your Core Data stack
-
-        // Create a fetch request for all entities in your Core Data model
+    func clearAllMoviesFromCoreData() {
+        let context = CoreDataStack.shared.managedObjectContext
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "MovieEntity")
-
-        // Create a batch delete request with the fetch request
         let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
 
         do {
-            // Execute the batch delete request
             try context.execute(batchDeleteRequest)
-
-            // Save the context to persist the changes
             try context.save()
         } catch {
-            print("Error clearing Core Data: \(error.localizedDescription)")
+            print("Error clearing all movies from Core Data: \(error)")
         }
     }
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {

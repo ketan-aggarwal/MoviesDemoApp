@@ -47,7 +47,10 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
         interactor?.fetchTrailer(request: request)
         detailTable.rowHeight = UITableView.automaticDimension
         detailTable.separatorStyle = .none
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "arrow.clockwise"), style: .plain ,target: self, action: #selector(refreshBtn))
     }
+    
+   
     
     @IBAction func descBtn(_ sender: Any) {
         guard let overview = dataStore?.selectedMovie?.overview else {
@@ -78,8 +81,6 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
     }
     
     func updateLikedState(isLiked: Bool) {
-            // Implement your logic to update the UI based on the 'isLiked' state
-            // For example, you might want to update the appearance of your like button.
             self.isLiked = isLiked
            print("helllolll\(isLiked)")
             updateLikeButtonAppearance()
@@ -114,9 +115,7 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
            
         }
     }
-    
-    
-    
+
     func setupPlayer(){
         playerView = YTPlayerView()
         playerView.delegate = self
@@ -143,6 +142,22 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
         presenter.movieDetailViewController = movieDetailviewController
     }
     
+    @objc func refreshBtn(_ sender: UIButton){
+        let movieID = dataStore?.selectedMovie?.id ?? 0
+            
+            // Save the current liked state
+            let currentLikedState = interactor?.getCurrentLikedState() ?? false
+            print("current state \(currentLikedState)")
+            
+            // Fetch movie info and trailer from the network
+            let request = MovieDetailModel.FetchInfo.Request(apiKey: "e3d053e3f62984a4fa5d23b83eea3ce6", movieID: Int(movieID))
+            interactor?.fetchTrailer(request: request)
+            interactor?.fetchMovieInfoFromNetwork(movieID: Int(movieID))
+            
+            // Always update the liked state
+            interactor?.updateLikedState(movieID: Int(movieID), isLiked: currentLikedState)
+    }
+    
     
     var labels: [String] = ["Languages:","Revenue:","Runtime:","Release Date:","Production Countries:"]
     var values: [String?] = [nil,nil,nil,nil,nil]
@@ -162,12 +177,19 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
     func displayMovieInfo(viewModel: MovieDetailViewModels.MovieInfoViewModel) {
         FullTitle.text = dataStore?.selectedMovie?.title ?? "N/A"
         tagLabel.text = "# \(viewModel.movieInfo.tagline ?? "No TagLine")"
+//        values = [
+//            viewModel.movieInfo.spoken_languages?.first?.english_name ?? "N/A",
+//            "\((viewModel.movieInfo.revenue).map{ String($0/1000000) } ?? "Nil") Mil.",
+//            "\((viewModel.movieInfo.runtime).map{ String($0) } ?? "Nil") Min.",
+//            viewModel.movieInfo.release_date,
+//            viewModel.movieInfo.production_countries?.first?.name ?? "N/A",
+//        ]
         values = [
-            viewModel.movieInfo.spoken_languages?.first?.english_name ?? "N/A",
+            viewModel.movieInfo.spokenLanguages?.first?.englishName ?? "N/A",
             "\((viewModel.movieInfo.revenue).map{ String($0/1000000) } ?? "Nil") Mil.",
             "\((viewModel.movieInfo.runtime).map{ String($0) } ?? "Nil") Min.",
-            viewModel.movieInfo.release_date,
-            viewModel.movieInfo.production_countries?.first?.name ?? "N/A",
+            viewModel.movieInfo.releaseDate,
+            viewModel.movieInfo.productionCountries?.first?.name ?? "N/A",
         ]
         
         DispatchQueue.main.async {
@@ -188,9 +210,6 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
                     self?.playerView.load(withVideoId: key)
                     
                 }
-            
-
-           //startMarqueeAnimation()
         } else {
             print("Invalid trailer key")
         }

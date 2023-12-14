@@ -12,15 +12,9 @@ import QuartzCore
 
 
 class MovieCell: UITableViewCell{
-    
-
-    
+  
     @IBOutlet weak var rating: UILabel!
     @IBOutlet weak var img: UIImageView!
-    
-
-   
-
     @IBOutlet weak var desc: UILabel!
     @IBOutlet weak var title: UILabel!
     @IBOutlet weak var sepView: UIView!
@@ -35,7 +29,7 @@ class MovieCell: UITableViewCell{
         
         let gradientLayer = CAGradientLayer()
         gradientLayer.frame = sepView.bounds
-        let topColor = UIColor.systemBlue.cgColor
+        let topColor = UIColor.systemBrown.cgColor
         let bottomColor = UIColor.black.cgColor
         gradientLayer.colors = [topColor,bottomColor]
         gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)

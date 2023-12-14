@@ -8,6 +8,8 @@
 
 import UIKit
 import SDWebImage
+import SideMenu
+import GoogleSignIn
 
 
 
@@ -16,9 +18,11 @@ protocol MovieDisplayLogic: AnyObject {
     func displayConfiguration(viewModel: MovieListViewModels.ImageConfigurationViewModel)
 }
 
-class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDelegate, UITableViewDataSource, MovieListDataPassing{
-    
-    
+class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDelegate, UITableViewDataSource, MovieListDataPassing, MenuControllerDelegate, UIScrollViewDelegate{
+  
+    private var sideMenu: SideMenuNavigationController?
+    private let infoController = InfoViewController()
+    private let signoutController = SignOutViewController()
     var dataStore: MovieListDataStore?
     
     @IBOutlet weak var myTable: UITableView!
@@ -32,20 +36,49 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
     
     
     let button = UIButton()
-    
+   
+     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.isNavigationBarHidden = false
         setupTable()
         setup()
-        setupButton()
+        //setupButton()
         popularMoviesSelected()
         fetchConfiguration(apiKey: apiKey)
-        //fetchMovies(apiKey: apiKey)
         self.view.tintColor = .white
         configureBarBtn()
         
+        self.navigationItem.setHidesBackButton(true, animated: false)
+        let menu = MenuController(with: SideMenuItems.allCases)
+        menu.delegate = self
+        sideMenu = SideMenuNavigationController(rootViewController: menu)
+        sideMenu?.leftSide = true
+        SideMenuManager.default.leftMenuNavigationController = sideMenu
+        SideMenuManager.default.addPanGestureToPresent(toView: view)
+        
+        addChildControllers()
+        
+        
+    }
+    private func addChildControllers(){
+        addChild(infoController)
+        addChild(signoutController)
+        
+        view.addSubview(infoController.view)
+        view.addSubview(signoutController.view)
+        
+        infoController.view.frame = view.bounds
+        signoutController.view.frame = view.bounds
+        
+        infoController.didMove(toParent: self)
+        signoutController.didMove(toParent: self)
+        
+        infoController.view.isHidden = true
+        signoutController.view.isHidden = true
     }
     
+   
     private func setup() {    //start point
         let viewController = self
         let presenter = MoviePresenter()
@@ -58,6 +91,8 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         interactor.presenter = presenter
         presenter.viewController = viewController
         viewController.router = router
+        
+        
     }
     
     func setupTable(){
@@ -65,51 +100,80 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         myTable.dataSource = self
         
     }
-    func setupButton(){
-        button.frame = CGRect(x: 0, y: 0, width: 200, height: 40)
-        button.backgroundColor = .systemBlue
-        button.setTitle("Load More", for: .normal)
-        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
-        myTable.tableFooterView = button
+//    func setupButton(){
+//        button.frame = CGRect(x: 0, y: 0, width: 200, height: 40)
+//        button.backgroundColor = .systemBlue
+//        button.setTitle("Load More", for: .normal)
+//        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+//        myTable.tableFooterView = button
+//    }
+//
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard let moviesCount = movies?.count, moviesCount > 0 else {
+            // If there are no movies, return early to avoid unnecessary API calls
+            return
+        }
+
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let screenHeight = scrollView.frame.size.height
+
+        if offsetY > contentHeight - screenHeight {
+            // User is near the bottom, load more movies
+            loadMoreMovies()
+        }
     }
+
     
     func configureBarBtn() {
-        let optionsButton = UIButton(type: .system)
-        optionsButton.setTitle("Filter", for: .normal)
-        optionsButton.tintColor = .white
-        optionsButton.addTarget(self, action: #selector(showOptions), for: .touchUpInside)
-        
-        let optionsBarButton = UIBarButtonItem(customView: optionsButton)
-        navigationItem.rightBarButtonItem = optionsBarButton
+//        let optionsButton = UIButton(type: .system)
+//        optionsButton.setTitle("Filter", for: .normal)
+//        optionsButton.tintColor = .white
+//        optionsButton.addTarget(self, action: #selector(showOptions), for: .touchUpInside)
+//
+//        let optionsBarButton = UIBarButtonItem(customView: optionsButton)
+//        navigationItem.rightBarButtonItem = optionsBarButton
+
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "line.3.horizontal"), style: .plain ,target: self, action: #selector(yourAction))
+        navigationItem.leftBarButtonItem?.tintColor = .white
+
     }
     
-    @objc func showOptions(_ sender: UIButton) {
-        let alertController = UIAlertController(title: "Select Option", message: nil, preferredStyle: .actionSheet)
+    @objc func yourAction(_ sender: UIButton){
         
-        alertController.view.tintColor = UIColor.white
-        
-        let popularAction = UIAlertAction(title: "Popular Movies", style: .default) { _ in
-            self.popularMoviesSelected()
-        }
-        
-        let upcomingAction = UIAlertAction(title: "Upcoming Movies", style: .default) { _ in
-            self.upcomingMoviesSelected()
-        }
-        alertController.view.tintColor = UIColor.white
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        
-        alertController.addAction(popularAction)
-        alertController.addAction(upcomingAction)
-        alertController.addAction(cancelAction)
-        
-        if let popoverController = alertController.popoverPresentationController {
-            popoverController.sourceView = sender
-            popoverController.sourceRect = sender.bounds
-            popoverController.permittedArrowDirections = .up
-        }
-        
-        present(alertController, animated: true, completion: nil)
+        present(sideMenu!, animated: true)
     }
+    
+   
+    
+//    @objc func showOptions(_ sender: UIButton) {
+//        let alertController = UIAlertController(title: "Select Option", message: nil, preferredStyle: .actionSheet)
+//
+//        alertController.view.tintColor = UIColor.white
+//
+//        let popularAction = UIAlertAction(title: "Popular Movies", style: .default) { _ in
+//            self.popularMoviesSelected()
+//        }
+//
+//        let upcomingAction = UIAlertAction(title: "Upcoming Movies", style: .default) { _ in
+//            self.upcomingMoviesSelected()
+//        }
+//        alertController.view.tintColor = UIColor.white
+//        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+//
+//        alertController.addAction(popularAction)
+//        alertController.addAction(upcomingAction)
+//        alertController.addAction(cancelAction)
+//
+//        if let popoverController = alertController.popoverPresentationController {
+//            popoverController.sourceView = sender
+//            popoverController.sourceRect = sender.bounds
+//            popoverController.permittedArrowDirections = .up
+//        }
+//
+//        present(alertController, animated: true, completion: nil)
+//    }
+   
     
     @objc func popularMoviesSelected() {
         ActivityIndicatorManager.shared.showActivityIndicator()
@@ -132,18 +196,29 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         
     }
     
-    @objc func buttonTapped(){
-        currentPage += 1
-        let url: String
-        if navigationItem.title == "Popular Movies" {
-            url = "https://api.themoviedb.org/3/discover/movie?api_key=\(apiKey)&page=\(currentPage)"
-        } else {
-            url = "https://api.themoviedb.org/3/movie/upcoming?api_key=\(apiKey)&page=\(currentPage)"
+//    @objc func buttonTapped(){
+//        currentPage += 1
+//        let url: String
+//        if navigationItem.title == "Popular Movies" {
+//            url = "https://api.themoviedb.org/3/discover/movie?api_key=\(apiKey)&page=\(currentPage)"
+//        } else {
+//            url = "https://api.themoviedb.org/3/movie/upcoming?api_key=\(apiKey)&page=\(currentPage)"
+//        }
+//
+//
+//        fetchMovies(apiKey: apiKey, url: url)
+//    }
+    func loadMoreMovies() {
+            currentPage += 1
+            let url: String
+            if navigationItem.title == "Popular Movies" {
+                url = "https://api.themoviedb.org/3/discover/movie?api_key=\(apiKey)&page=\(currentPage)"
+            } else {
+                url = "https://api.themoviedb.org/3/movie/upcoming?api_key=\(apiKey)&page=\(currentPage)"
+            }
+
+            fetchMovies(apiKey: apiKey, url: url)
         }
-        
-        
-        fetchMovies(apiKey: apiKey, url: url)
-    }
     
     func fetchMovies(apiKey: String,url:String){
         interactor!.fetchMovies(request: MovieListModels.FetchMovies.Request(apiKey: apiKey, page: 1),url: url)
@@ -176,7 +251,9 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        movies?.count ?? 0
+      
+       return movies?.count ?? 0
+        
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -206,5 +283,38 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         router?.navigateToMovieDetail(movie: movie)
     }
     
+    func didSelectMenuItem(named: SideMenuItems) {
+        sideMenu?.dismiss(animated:true, completion: { [weak self] in
+            //self!.title = named
+            switch named{
+            case .popularMovies:
+                self?.popularMoviesSelected()
+                self?.navigationController?.isNavigationBarHidden = false
+                self?.infoController.view.isHidden = true
+                self?.signoutController.view.isHidden = true
+            case .info:
+                self?.navigationController?.isNavigationBarHidden = true
+                self?.infoController.view.isHidden = false
+                self?.signoutController.view.isHidden = true
+            case .signout:
+                self?.performSignOut()
+            case .upcomingMovies:
+                self?.upcomingMoviesSelected()
+                self?.navigationController?.isNavigationBarHidden = false
+                self?.infoController.view.isHidden = true
+                self?.signoutController.view.isHidden = true
+            }
+        })
+    }
+    func performSignOut(){
+        GIDSignIn.sharedInstance.signOut()
+            UserDefaults.standard.set(false, forKey: "isUserSignedIn")
+            self.navigationController?.popToRootViewController(animated: true)
+    }
     
 }
+
+
+
+
+

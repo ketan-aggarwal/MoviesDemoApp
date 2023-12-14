@@ -10,6 +10,13 @@ target 'MoviesList' do
   # Pods for MoviesList
 
 pod 'youtube-ios-player-helper'
+pod 'Firebase/Core'
+pod 'Firebase/Auth'
+pod 'FirebaseFirestore'
+pod 'FirebaseStorage'
+pod 'GoogleSignIn'
+pod 'SWRevealViewController'
+pod 'SideMenu'
 
   target 'MoviesListTests' do
     inherit! :search_paths

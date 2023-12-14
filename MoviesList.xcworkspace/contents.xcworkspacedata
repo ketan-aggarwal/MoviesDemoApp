@@ -2,6 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:NewMoveEntity+CoreDataClass.swift">
+   </FileRef>
+   <FileRef
+      location = "group:NewMoveEntity+CoreDataProperties.swift">
+   </FileRef>
+   <FileRef
       location = "group:MovieInfoEntity+CoreDataClass.swift">
    </FileRef>
    <FileRef
