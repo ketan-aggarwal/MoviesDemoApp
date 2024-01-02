@@ -107,12 +107,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
 
             // Check if the root view controller is a UINavigationController
+     
             if let rootViewController = window.rootViewController,
                rootViewController is UINavigationController {
                 // Push the movie detail view controller onto the existing navigation stack
                 if let navigationController = rootViewController as? UINavigationController {
-
-
+                    let movieDetail = Movie(title: , overview: nil, vote_average: nil, poster_path: nil, id: Int64(movieID))
+                    let dataStore = MovieDetailDataStoreImp()
+                    dataStore.setupDataStore(movieDetail, apiKey: "e3d053e3f62984a4fa5d23b83eea3ce6")
+                    let router = MovieDetailRouter(viewController: movieDetailViewController, dataStore: dataStore)
+                    movieDetailViewController.dataStore = MovieDetailDataStoreImp()
+                    movieDetailViewController.dataStore?.selectedMovie = movieDetail
+                    movieDetailViewController.router = router
                     navigationController.pushViewController(movieDetailViewController, animated: true)
                 }
             } else {
