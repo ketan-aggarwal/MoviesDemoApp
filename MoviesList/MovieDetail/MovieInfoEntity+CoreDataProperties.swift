@@ -19,10 +19,10 @@ extension MovieInfoEntity {
     @NSManaged public var isLiked: Bool
     @NSManaged public var languages: String?
     @NSManaged public var productionCountries: String?
-    @NSManaged public var revenue: Int64
     @NSManaged public var releaseDate: String?
-    @NSManaged public var tagline: String?
+    @NSManaged public var revenue: Int64
     @NSManaged public var runtime: Int64
-    @NSManaged public var id: Int64
+    @NSManaged public var tagline: String?
+    @NSManaged public var uniqueIdentifier: String?
 
 }

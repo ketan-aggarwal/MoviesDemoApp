@@ -28,18 +28,25 @@ class SignOutViewController: UIViewController {
     
     @objc func signOutButtonTapped(_ sender: Any){
         GIDSignIn.sharedInstance.signOut()
+       
             UserDefaults.standard.set(false, forKey: "isUserSignedIn")
-
-            // Navigate to the sign-in screen or perform any other action after sign-out
-            // For example, you can pop to the root view controller (assuming your root is the login screen):
+        UserDefaults.standard.set(nil, forKey: "userName")
+        UserDefaults.standard.set(nil, forKey: "userProfileImageURL")
             self.navigationController?.popToRootViewController(animated: true)
-//        dismiss(animated: true, completion: {
-//                // Optionally, pop to the root view controller
-//                self.navigationController?.popToRootViewController(animated: true)
-//            })
+        
     }
     
-
    
+//    func clearUserData() {
+//        // Reset user-related variables
+//        UserDataManager.shared.userName = nil
+//        UserDataManager.shared.userProfileImageURL = nil
+//
+//        // Clear cached data, if any
+//        // For example, you might want to clear an image cache
+//        // ImageCacheManager.shared.clearCache()
+//
+//        // Any other user-specific data to be cleared can be added here
+//    }
 
 }

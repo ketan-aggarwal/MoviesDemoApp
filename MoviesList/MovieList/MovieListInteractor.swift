@@ -62,7 +62,7 @@ class MovieListInteractor: MovieBusinessLogic, MovieListDataStore {
                 if let firstMovie = newMovies.first {
                     self.selectedMovie = firstMovie
                     self.setMovieData(firstMovie)
-                    print("Selected Movie: \(String(describing: self.selectedMovie))")
+                   
                 }
 
                 let response = MovieListModels.FetchMovies.Response(movies: newMovies)
@@ -72,90 +72,7 @@ class MovieListInteractor: MovieBusinessLogic, MovieListDataStore {
 
     }
     
-// func fetchMovies(request: MovieListModels.FetchMovies.Request, url: String) {
-//    // Check if movieID is available from the selected movie
 //
-//
-//    // Attempt to fetch movies from CoreData
-//    worker.fetchMoviesFromCoreData { movieEntities in
-//        if let movieEntities = movieEntities, !movieEntities.isEmpty {
-//            // If movies are found in CoreData, convert MovieEntity to Movie objects
-//            let movies = movieEntities.map { movieEntity -> Movie in
-//                return Movie(
-//                    title: movieEntity.title,
-//                    overview: movieEntity.overview,
-//                    vote_average: movieEntity.vote_average,
-//                    poster_path: movieEntity.imageUrl,
-//                    id: (movieEntity.id)
-//                )
-//            }
-//            // Set the movies array and present the response
-//            self.movies = movies
-//            let response = MovieListModels.FetchMovies.Response(movies: movies)
-//            self.presenter?.presentFetchMovies(response: response)
-//        } else {
-//            // If movies are not found in CoreData, fetch them from the network
-//            self.worker.fetchMovies(apiKey: self.apiKey, currentPage: 1, url: url) { [weak self] movies in
-//                if let movies = movies {
-//                    // Save all movies to CoreData
-//                    self?.worker.saveMoviesToCoreData(movies: movies)
-//                    // Set the movies array and present the response
-//                    self?.movies = movies
-//                    let response = MovieListModels.FetchMovies.Response(movies: movies)
-//                    self?.presenter?.presentFetchMovies(response: response)
-//                }
-//            }
-//        }
-//    }
-//}
-
-        
-    
-//
-    
-//       func fetchMovies(request: MovieListModels.FetchMovies.Request, url: String) {
-//        worker.fetchMoviesFromCoreData { [weak self] moviesFromCoreData in
-//            guard let self = self else { return }
-//
-//            if let moviesFromCoreData = moviesFromCoreData, !moviesFromCoreData.isEmpty {
-//                // Update the movies array with the fetched movies from Core Data
-//                self.movies = moviesFromCoreData
-//
-//                if let firstMovie = moviesFromCoreData.first {
-//                    self.selectedMovie = firstMovie
-//                    self.setMovieData(firstMovie)
-//                    print("Selected Movie: \(String(describing: self.selectedMovie))")
-//                }
-//
-//                let response = MovieListModels.FetchMovies.Response(movies: moviesFromCoreData)
-//                self.presenter?.presentFetchMovies(response: response)
-//            } else {
-//                // No movies in Core Data, fetch from network
-//                self.worker.fetchMovies(apiKey: self.apiKey, currentPage: self.currentPage, url: url) { [weak self] newMovies in
-//                    guard let self = self else { return }
-//
-//                    if let newMovies = newMovies {
-//                        // Save new movies to Core Data
-//                        self.worker.saveMoviesToCoreData(movies: newMovies)
-//
-//                        // Update the movies array with the new movies
-//                        self.movies = newMovies
-//
-//                        if let firstMovie = newMovies.first {
-//                            self.selectedMovie = firstMovie
-//                            self.setMovieData(firstMovie)
-//                            print("Selected Movie: \(String(describing: self.selectedMovie))")
-//                        }
-//
-//                        let response = MovieListModels.FetchMovies.Response(movies: newMovies)
-//                        self.presenter?.presentFetchMovies(response: response)
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-
         
         func fetchConfiguration(request: MovieListModels.FetchImageConfiguration.Request) {
             worker.fetchConfiguration(apiKey: apiKey) { [weak self] configuration in

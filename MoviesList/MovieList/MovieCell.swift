@@ -29,7 +29,7 @@ class MovieCell: UITableViewCell{
         
         let gradientLayer = CAGradientLayer()
         gradientLayer.frame = sepView.bounds
-        let topColor = UIColor.systemBrown.cgColor
+        let topColor = UIColor.darkGray.cgColor
         let bottomColor = UIColor.black.cgColor
         gradientLayer.colors = [topColor,bottomColor]
         gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
@@ -38,7 +38,6 @@ class MovieCell: UITableViewCell{
         sepView.clipsToBounds = true
         sepView.layer.cornerRadius = 10
     
-        
         title.textColor = .white
         title.backgroundColor = .clear
         title.font = UIFont(name: "Avenir", size: 22)

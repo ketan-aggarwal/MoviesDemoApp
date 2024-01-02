@@ -42,8 +42,7 @@ class MovieListRouter: MovieListRoutingLogic, MovieListDataPassing {
     
     func passMovieData(_ movie: Movie) {
         dataStore?.selectedMovie = movie
-        print(dataStore!.selectedMovie!.title!)
-        print(dataStore!.selectedMovie!.id!)
+       
         }
 }
         

@@ -10,14 +10,43 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
-
+    private var deepLinkObserverAdded = false
+    
+    private (set) static var shared: SceneDelegate?
+ 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-        guard let _ = (scene as? UIWindowScene) else { return }
+        guard let  windowScene = (scene as? UIWindowScene) else { return }
+        window = UIWindow(frame: windowScene.coordinateSpace.bounds)
+        window?.windowScene = windowScene
+        SceneDelegate.shared = self
+        handleRootVC()
+
     }
+    
+    func handleRootVC(){
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            if UserDefaults.standard.bool(forKey: "isUserSignedIn") {
+                let movieViewController = storyboard.instantiateViewController(withIdentifier: "MovieViewController") as! MovieViewController
+                let navigationController = UINavigationController(rootViewController: movieViewController)
+                window?.rootViewController = navigationController
+            } else {
+                let loginViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+                let navigationController = UINavigationController(rootViewController: loginViewController)
+                window?.rootViewController = navigationController
+            }
+
+            window?.makeKeyAndVisible()
+    }
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+            if let url = URLContexts.first?.url {
+                print("Deep link \(url)")
+                NotificationCenter.default.post(
+                    name: Notification.Name("DeepLinkNotification"),
+                    object: nil,
+                    userInfo: ["url": url]
+                )
+            }
+        }
 
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
@@ -27,9 +56,110 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
-        // Called when the scene has moved from an inactive state to an active state.
-        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+      
+        if !deepLinkObserverAdded {
+                    NotificationCenter.default.addObserver(
+                        self,
+                        selector: #selector(handleDeepLink(_:)),
+                        name: Notification.Name("DeepLinkNotification"),
+                        object: nil
+                    )
+                    deepLinkObserverAdded = true
+                }
     }
+    
+    @objc func handleDeepLink(_ notification: Notification) {
+            // Hxandle the deep link here
+            if let url = notification.userInfo?["url"] as? URL {
+                print("Handling deep link: \(url)")
+                if let components = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+                            if let host = components.host {
+                                switch host {
+                                case "movie":
+                                   
+                                    if let movieID = components.queryItems?.first(where: { $0.name == "id" })?.value {
+                                        print("Open movie with ID: \(movieID)")
+                                        openMovieDetailPage(with: movieID)
+                                    }
+                                default:
+                                    break
+                                }
+                            }
+                        }
+            }
+        }
+        
+    
+    func openMovieDetailPage(with movieID: String) {
+        // Assuming you have a storyboard identifier for the movie detail view controller
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        if let movieDetailViewController = storyboard.instantiateViewController(withIdentifier: "MovieDetailViewController") as? MovieDetailViewController {
+            // Pass the movie ID to the movie detail view controller
+            movieDetailViewController.movieID = Int(movieID)
+            print("ketanis\(movieID)")
+
+
+            // Access the app's current window
+            guard let window = UIApplication.shared.windows.first else {
+                print("Error: Window is nil.")
+                return
+            }
+
+            // Check if the root view controller is a UINavigationController
+            if let rootViewController = window.rootViewController,
+               rootViewController is UINavigationController {
+                // Push the movie detail view controller onto the existing navigation stack
+                if let navigationController = rootViewController as? UINavigationController {
+
+
+                    navigationController.pushViewController(movieDetailViewController, animated: true)
+                }
+            } else {
+                // If the root view controller is not a UINavigationController, create a new one
+                let navigationController = UINavigationController(rootViewController: movieDetailViewController)
+                window.rootViewController = navigationController
+            }
+        } else {
+            // Handle the case where instantiation fails
+            print("Error: Unable to instantiate MovieDetailViewController.")
+        }
+    }
+    
+//    func openMovieDetailPage(with movieID: String) {
+//        // Assuming you have a storyboard identifier for the movie detail view controller
+//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//
+//        guard let movieDetailViewController = storyboard.instantiateViewController(withIdentifier: "MovieDetailViewController") as? MovieDetailViewController else {
+//            // Handle the case where instantiation fails
+//            print("Error: Unable to instantiate MovieDetailViewController.")
+//            return
+//        }
+//
+//        // Pass the movie ID to the movie detail view controller
+//        movieDetailViewController.movieID = Int(movieID)
+//        print("ketanis \(movieID)")
+//
+//        // Access the app's current window
+//        guard let window = UIApplication.shared.windows.first else {
+//            print("Error: Window is nil.")
+//            return
+//        }
+//
+//        // Check if the root view controller is a UINavigationController
+//        if let rootViewController = window.rootViewController, rootViewController is UINavigationController {
+//            // Push the movie detail view controller onto the existing navigation stack
+//            if let navigationController = rootViewController as? UINavigationController {
+//                navigationController.pushViewController(movieDetailViewController, animated: true)
+//            }
+//        } else {
+//            // If the root view controller is not a UINavigationController, present the movie detail view controller modally
+//            window.rootViewController?.present(movieDetailViewController, animated: true, completion: nil)
+//        }
+//    }
+
+  
+
 
     func sceneWillResignActive(_ scene: UIScene) {
         // Called when the scene will move from an active state to an inactive state.

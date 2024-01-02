@@ -11,23 +11,23 @@ import GoogleSignIn
 
 class LoginViewController: UIViewController, UITextFieldDelegate {
 
-    
     @IBOutlet weak var emailText: UITextField!
     @IBOutlet weak var passwordText: UITextField!
     @IBOutlet weak var loginBtn: UIButton!
     @IBOutlet weak var signupBtn: UIButton!
+ 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if UserDefaults.standard.bool(forKey: "isUserSignedIn") {
-                navigateToMainScreen()
-            }
-       // observeAuthenticationState()
+
+//        if UserDefaults.standard.bool(forKey: "isUserSignedIn") {
+//                navigateToMainScreen()
+//            }
+      //  observeAuthenticationState()
         addGradientBackground()
         passwordText.isSecureTextEntry = true
         emailText.attributedPlaceholder = NSAttributedString(string: "Email", attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
         passwordText.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
-       
     }
 
     func observeAuthenticationState() {
@@ -44,6 +44,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                 }
             }
         }
+   
+    
+    
     func addGradientBackground() {
             let gradientLayer = CAGradientLayer()
             gradientLayer.frame = view.bounds
@@ -60,7 +63,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             print("Error: Unable to instantiate MovieViewController from storyboard.")
         }
     }
-    
+
     @IBAction func loginButtonTapped(_ sender: Any) {
         
         guard let email = emailText.text, let password = passwordText.text else {
@@ -82,9 +85,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                 }
             } else {
                 // Login successful
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    self.navigateToMainScreen()
-                }
+                self.navigateToMainScreen()
             }
         }
     }
@@ -121,24 +122,24 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func googleSignIn(_ sender: Any) {
-        
         GIDSignIn.sharedInstance.signIn(withPresenting: self) { signInResult, error in
-            guard error == nil else { return }
+                    guard error == nil else { return }
+            guard let signInResult = signInResult else { return }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                UserDefaults.standard.set(true, forKey: "isUserSignedIn")
-                self.navigateToMainScreen()
-
-            }
-
-        }
+                let user = signInResult.user
+            let fullName = user.profile?.name
+          
+            let profilePicUrl = user.profile?.imageURL(withDimension: 320)
+            UserDataManager.shared.userName = fullName
+                UserDataManager.shared.userProfileImageURL = profilePicUrl
+            UserDefaults.standard.set(fullName, forKey: "userName")
+            UserDefaults.standard.set(profilePicUrl?.absoluteString, forKey: "userProfileImageURL")
+            UserDefaults.standard.set(true, forKey: "isUserSignedIn")
+                      self.navigateToMainScreen()
+                }
+      
     }
-    
-    
-//    @IBAction func signInBtn(_ sender: Any) {
-//        
-//    }
-    
+
     func showAlert(message: String) {
          let alert = UIAlertController(title: "Alert", message: message, preferredStyle: .alert)
          alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))

@@ -19,46 +19,7 @@ protocol MovieDetailWorkingLogic {
 class MovieDetailWorker: MovieDetailWorkingLogic {
    
     
-//    func saveMovieInfoToCoreData(movieID: Int,movieInfo: MovieInfo, isLiked: Bool) {
-//                let context = CoreDataStack.shared.managedObjectContext
-//                let fetchRequest: NSFetchRequest<MovieInfoEntity> = MovieInfoEntity.fetchRequest()
-//
-//                fetchRequest.predicate = NSPredicate(format: "id == %d", movieID)
-//
-//                do {
-//                    let existingEntities = try context.fetch(fetchRequest)
-//                    if let existingEntity = existingEntities.first {
-//                        // Update existing entity
-//                        existingEntity.isLiked = isLiked
-//                        print("status movie:\(existingEntity.isLiked)")
-//                        existingEntity.languages = movieInfo.spoken_languages?.first?.english_name
-//                        existingEntity.productionCountries = movieInfo.production_countries?.first?.name
-//                        existingEntity.runtime = Int64(movieInfo.runtime ?? 0)
-//                        existingEntity.revenue = Int64(movieInfo.revenue ?? 0)
-//                        existingEntity.tagline = movieInfo.tagline
-//                        existingEntity.releaseDate = movieInfo.release_date
-//
-//                    } else {
-//                        // Create new entity if it doesn't exist
-//                        let movieInfoEntity = MovieInfoEntity(context: context)
-//                        //movieInfoEntity.uniqueIdentifier = uniqueIdentifier
-//                        movieInfoEntity.id = Int64(movieID)
-//                        movieInfoEntity.languages = movieInfo.spoken_languages?.first?.english_name
-//                        movieInfoEntity.productionCountries = movieInfo.production_countries?.first?.name
-//                        movieInfoEntity.runtime = Int64(movieInfo.runtime ?? 0)
-//                        movieInfoEntity.revenue = Int64(movieInfo.revenue ?? 0)
-//                        movieInfoEntity.tagline = movieInfo.tagline
-//                        movieInfoEntity.releaseDate = movieInfo.release_date
-//                        movieInfoEntity.isLiked = isLiked
-//
-//                        print("New MovieInfo saved to CoreData")
-//                    }
-//
-//                    try context.save()
-//                } catch {
-//                    print("Error saving MovieInfo to CoreData: \(error.localizedDescription)")
-//                }
-//            }
+//    
     func saveMovieInfoToCoreData(movieID: Int,movieInfo: MovieInfo, isLiked: Bool) {
                 let context = CoreDataStack.shared.managedObjectContext
                 let fetchRequest: NSFetchRequest<MovieInfoEntity> = MovieInfoEntity.fetchRequest()

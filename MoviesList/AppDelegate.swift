@@ -16,59 +16,101 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-      
+        
         FirebaseApp.configure()
         
-       // clearAllMoviesFromCoreData()
-        let viewController = MovieViewController()
-               if let font = UIFont(name: "HelveticaNeue-Light", size: 22) {
-                   var attributes: [NSAttributedString.Key: Any] = [
-                       .font: font,
-                       .foregroundColor: UIColor.white,
-                       .shadow: NSShadow()
-                   ]
-                   
-                   let shadow = NSShadow()
-                   shadow.shadowColor = UIColor.gray
-                   shadow.shadowOffset = CGSize(width: 1, height: 1)
-                   attributes[.shadow] = shadow
-                   UINavigationBar.appearance().titleTextAttributes = attributes
-               }
-      
+        navigationAppearance()
+        googleUserSignedIn()
+        if UserDefaults.standard.bool(forKey: "isUserSignedIn") {
+                if let storedUserName = UserDefaults.standard.string(forKey: "userName"),
+                   let storedProfileImageURLString = UserDefaults.standard.string(forKey: "userProfileImageURL"),
+                   let storedProfileImageURL = URL(string: storedProfileImageURLString) {
+
+                    // Set up your UI with stored user information
+                    UserDataManager.shared.userName = storedUserName
+                    UserDataManager.shared.userProfileImageURL = storedProfileImageURL
+                }
+            }
+//        DispatchQueue.main.async {
+//            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//            let window = UIWindow(frame: UIScreen.main.bounds)
+//
+//            if UserDefaults.standard.bool(forKey: "isUserSignedIn") {
+//                let movieViewController = storyboard.instantiateViewController(withIdentifier: "MovieViewController") as! MovieViewController
+//                let navigationController = UINavigationController(rootViewController: movieViewController)
+//                window.rootViewController = navigationController
+//            } else {
+//                let loginViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+//                let navigationController = UINavigationController(rootViewController: loginViewController)
+//                window.rootViewController = navigationController
+//            }
+//
+//            window.makeKeyAndVisible()
+//
+//            // Optional: Add a slight delay to the transition to ensure a smoother visual effect
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+//                UIView.transition(with: window, duration: 0.5, options: .transitionCrossDissolve, animations: nil, completion: nil)
+//            }
+//
+//            self.window = window
+//        }
+        
+        
+       
+        
+        
         print("Documents Directory: ", FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last ?? "Not Found!")
+        return true
+    }
         
         func application(
           _ app: UIApplication,
           open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]
         ) -> Bool {
+            
           var handled: Bool
-
+            print("App delegate Deep link \(url)")
+            
           handled = GIDSignIn.sharedInstance.handle(url)
           if handled {
             return true
           }
+            
+            
           return false
         }
       
-        
-        func application(
-          _ application: UIApplication,
-          didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-        ) -> Bool {
-          GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
-            if error != nil || user == nil {
-              // Show the app's signed-out state.
-            } else {
-              // Show the app's signed-in state.
-            }
-          }
-          return true
-        }
-        return true
-    }
-   
 
     // MARK: UISceneSession Lifecycle
+    func navigationAppearance(){
+        let viewController = MovieViewController()
+        if let font = UIFont(name: "HelveticaNeue-Light", size: 22) {
+            var attributes: [NSAttributedString.Key: Any] = [
+                .font: font,
+                .foregroundColor: UIColor.white,
+                .shadow: NSShadow()
+            ]
+            
+            let shadow = NSShadow()
+            shadow.shadowColor = UIColor.gray
+            shadow.shadowOffset = CGSize(width: 1, height: 1)
+            attributes[.shadow] = shadow
+            UINavigationBar.appearance().titleTextAttributes = attributes
+        }
+        
+    }
+    
+    func googleUserSignedIn(){
+        GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
+          if error != nil || user == nil {
+              UserDefaults.standard.set(false, forKey: "isUserSignedIn")
+          } else {
+              UserDefaults.standard.set(true, forKey: "isUserSignedIn")
+          }
+        }
+    }
+    
+   
 
     func clearAllMoviesFromCoreData() {
         let context = CoreDataStack.shared.managedObjectContext
