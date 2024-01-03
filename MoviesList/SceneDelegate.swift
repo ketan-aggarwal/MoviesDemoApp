@@ -132,42 +132,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             print("Error: Unable to instantiate MovieDetailViewController.")
         }
     }
-    
-//    func openMovieDetailPage(with movieID: String) {
-//        // Assuming you have a storyboard identifier for the movie detail view controller
-//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-//
-//        guard let movieDetailViewController = storyboard.instantiateViewController(withIdentifier: "MovieDetailViewController") as? MovieDetailViewController else {
-//            // Handle the case where instantiation fails
-//            print("Error: Unable to instantiate MovieDetailViewController.")
-//            return
-//        }
-//
-//        // Pass the movie ID to the movie detail view controller
-//        movieDetailViewController.movieID = Int(movieID)
-//        print("ketanis \(movieID)")
-//
-//        // Access the app's current window
-//        guard let window = UIApplication.shared.windows.first else {
-//            print("Error: Window is nil.")
-//            return
-//        }
-//
-//        // Check if the root view controller is a UINavigationController
-//        if let rootViewController = window.rootViewController, rootViewController is UINavigationController {
-//            // Push the movie detail view controller onto the existing navigation stack
-//            if let navigationController = rootViewController as? UINavigationController {
-//                navigationController.pushViewController(movieDetailViewController, animated: true)
-//            }
-//        } else {
-//            // If the root view controller is not a UINavigationController, present the movie detail view controller modally
-//            window.rootViewController?.present(movieDetailViewController, animated: true, completion: nil)
-//        }
-//    }
-
-  
-
-
+ 
     func sceneWillResignActive(_ scene: UIScene) {
         // Called when the scene will move from an active state to an inactive state.
         // This may occur due to temporary interruptions (ex. an incoming phone call).

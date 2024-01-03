@@ -20,7 +20,7 @@ enum SideMenuItems: String, CaseIterable{
     case likedMovies = "Liked Movies"
     case info = "About Us"
     case signout = "Sign Out"
-    case theme = "Light/Dark"
+    //case theme = "Light/Dark"
     
 }
 class ArrowMenuCell: UITableViewCell {
@@ -71,28 +71,43 @@ class MenuController: UITableViewController{
 
 //
 //    private func createHeaderView() {
-//        // Create circular image view
+//
+//
+//         Create circular image view
 //        userImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
 //        userImageView?.contentMode = .scaleAspectFill
 //        userImageView?.layer.cornerRadius = userImageView!.frame.width / 2
 //        userImageView?.clipsToBounds = true
+//
+//        // Check if the user signed in with Google
 //        if let profilePicUrl = UserDataManager.shared.userProfileImageURL {
 //            userImageView?.sd_setImage(with: profilePicUrl, placeholderImage: UIImage(named: "defaultProfileImage"))
+//        } else {
+//            // Display a default image or no image for proprietary login
+//            userImageView?.image = UIImage(named: "defaultProfileImage")
 //        }
 //
 //        userNameLabel = UILabel(frame: CGRect(x: 50, y: 0, width: 200, height: 40))
 //        userNameLabel?.textColor = .white
 //        userNameLabel?.font = UIFont.boldSystemFont(ofSize: 20)
-//        userNameLabel?.text = UserDataManager.shared.userName
+//        userNameLabel?.numberOfLines = 2
+//
+//        // Check if the user signed in with Google
+//        if let userName = UserDataManager.shared.userName {
+//            userNameLabel?.text = userName
+//        } else {
+//            // Display a generic greeting for proprietary login
+//            userNameLabel?.text = "ketan Aggarwal Ketan Aggarwal"
+//        }
 //
 //        let containerView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 60))
 //        containerView.addSubview(userImageView!)
 //        containerView.addSubview(userNameLabel!)
+//
 //        navigationItem.titleView = containerView
 //    }
+//
     private func createHeaderView() {
-        
-       
         // Create circular image view
         userImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
         userImageView?.contentMode = .scaleAspectFill
@@ -107,25 +122,34 @@ class MenuController: UITableViewController{
             userImageView?.image = UIImage(named: "defaultProfileImage")
         }
 
-        userNameLabel = UILabel(frame: CGRect(x: 50, y: 0, width: 200, height: 40))
+        userNameLabel = UILabel(frame: CGRect(x: 50, y: 0, width: 200, height: 60)) // Increased the height
         userNameLabel?.textColor = .white
         userNameLabel?.font = UIFont.boldSystemFont(ofSize: 20)
+        userNameLabel?.numberOfLines = 2
+        userNameLabel?.lineBreakMode = .byWordWrapping // Ensure word wrapping
 
         // Check if the user signed in with Google
         if let userName = UserDataManager.shared.userName {
             userNameLabel?.text = userName
+            let wordsCount = userName.components(separatedBy: .whitespacesAndNewlines).count
+            if wordsCount <= 5 {
+                userNameLabel?.numberOfLines = 1
+            }
         } else {
-            // Display a generic greeting for proprietary login
-            userNameLabel?.text = "Hi User"
+           
+            userNameLabel?.text = "ketan Aggarwal Ketan Aggarwal"
         }
 
         let containerView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 60))
         containerView.addSubview(userImageView!)
         containerView.addSubview(userNameLabel!)
-        
+
         navigationItem.titleView = containerView
     }
-    
+
+   
+
+
     @objc private func toggleTheme() {
         ThemeManager.shared.toggleTheme()
     }

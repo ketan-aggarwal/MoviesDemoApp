@@ -15,9 +15,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var passwordText: UITextField!
     @IBOutlet weak var loginBtn: UIButton!
     @IBOutlet weak var signupBtn: UIButton!
- 
+
     @IBOutlet weak var username: UITextField!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         username.isHidden = true
@@ -44,9 +44,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                 }
             }
         }
-   
-    
-    
+
+
+
     func addGradientBackground() {
             let gradientLayer = CAGradientLayer()
             gradientLayer.frame = view.bounds
@@ -54,7 +54,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         gradientLayer.locations = [0.0, 2.0]
             view.layer.insertSublayer(gradientLayer, at: 0)
         }
-    
+
     func navigateToMainScreen() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         if let movieViewController = storyboard.instantiateViewController(withIdentifier: "MovieViewController") as? MovieViewController {
@@ -65,15 +65,15 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
 
     @IBAction func loginButtonTapped(_ sender: Any) {
-        
+
         guard let email = emailText.text, let password = passwordText.text else {
             return
         }
-        
+
         if(email.count == 0 || password.count == 0){
             showAlert(message: "Email or Password Field Empty!")
         }
-        
+
         Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
             if let error = error as? NSError {
                 print("Firebase Auth Error Code: \(error.code)")
@@ -89,25 +89,25 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             }
         }
     }
-    
+
     @IBAction func signupButtonTapped(_ sender: Any) {
         username.isHidden = false
         guard let email = emailText.text, let password = passwordText.text, let userName = username.text else {
                    return
                }
-       
+
         if(email.count == 0 || password.count == 0 || userName.count == 0){
             showAlert(message: "Some Field is Empty!")
         }
-        
+
         if !isValidEmail(email){
             showAlert(message: "Invalid Email")
         }
-        
+
         if !isUserNameValid(userName){
             showAlert(message: "Username should have atleast 3 characters")
         }
-        
+
         if !isPasswordValid(password) {
             showAlert(message: "Password must be at least 6 characters long.")
             return
@@ -121,7 +121,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                        self.showAlert(message: "SignUp Successful")
                        self.emailText.text = ""
                        self.passwordText.text = ""
-                       
+
                    }
                    if let uid = Auth.auth().currentUser?.uid {
                        self.storeUserInfo(uid: uid, email: email, username: userName)
@@ -144,7 +144,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
     }
 
-    
+
     @IBAction func googleSignIn(_ sender: Any) {
         GIDSignIn.sharedInstance.signIn(withPresenting: self) { signInResult, error in
                     guard error == nil else { return }
@@ -152,7 +152,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
 
                 let user = signInResult.user
             let fullName = user.profile?.name
-          
+
             let profilePicUrl = user.profile?.imageURL(withDimension: 320)
             UserDataManager.shared.userName = fullName
                 UserDataManager.shared.userProfileImageURL = profilePicUrl
@@ -161,7 +161,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             UserDefaults.standard.set(true, forKey: "isUserSignedIn")
                       self.navigateToMainScreen()
                 }
-      
+
     }
 
     func showAlert(message: String) {
@@ -169,6 +169,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
          alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
          present(alert, animated: true, completion: nil)
      }
-    
+
    }
 

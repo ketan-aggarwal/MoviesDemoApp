@@ -57,7 +57,7 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         fetchConfiguration(apiKey: apiKey)
         configureBarBtn()
         addChildControllers()
-       
+        
         NotificationCenter.default.addObserver(self, selector: #selector(handleThemeChange), name: ThemeManager.themeChangedNotification, object: nil)
         
         self.view.tintColor = isDarkMode ? .black : .white
@@ -78,7 +78,7 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         
         updateTheme()
         ( UIApplication.shared.delegate as? AppDelegate)?.navigationAppearance(themeColor: isDarkMode ? .white : .black)
-       debugPrint("traitcollection called")
+        debugPrint("traitcollection called")
         configureBarBtn()
     }
     
@@ -173,12 +173,12 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         let switchButton = UIBarButtonItem(image: UIImage(systemName: "square.grid.2x2"), style: .plain, target: self, action: #selector(switchView))
         navigationItem.rightBarButtonItem = switchButton
         navigationItem.rightBarButtonItem?.tintColor = isDarkMode ? .white : .black
-        
+        updateTheme()
         updateRightBarButton()
     }
     
     @objc func switchView(){
-      
+        
         isTableView = !isTableView
         if isTableView {
             updateRightBarButton()
@@ -204,7 +204,7 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
     func updateRightBarButton(){
         let image: UIImage
         let action: Selector
-        
+        updateTheme()
         if isTableView {
             image = UIImage(systemName: "square.grid.2x2")!
             action = #selector(switchView)
@@ -257,9 +257,9 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         
         let url: String
         
-            if navigationItem.title == "Popular Movies" {
-                url = "https://api.themoviedb.org/3/discover/movie?api_key=\(apiKey)&page=\(currentPage)"
-        
+        if navigationItem.title == "Popular Movies" {
+            url = "https://api.themoviedb.org/3/discover/movie?api_key=\(apiKey)&page=\(currentPage)"
+            
         } else {
             url = "https://api.themoviedb.org/3/movie/upcoming?api_key=\(apiKey)&page=\(currentPage)"
         }
@@ -322,9 +322,6 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         return 225 // Adjust the height as needed
     }
     
-//    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-//        return 230  // Adjust the estimated height as needed
-//    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let selectedMovie = movies?[indexPath.row] {
@@ -346,15 +343,15 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         navigationController?.navigationBar.barTintColor = themeColor
         let oppositeColor: UIColor = themeColor.isLight ? .black : .white
         let titleTextAttributes: [NSAttributedString.Key: Any] = [
-               .foregroundColor: oppositeColor
-           ]
-           navigationController?.navigationBar.titleTextAttributes = titleTextAttributes
+            .foregroundColor: oppositeColor
+        ]
+        navigationController?.navigationBar.titleTextAttributes = titleTextAttributes
         //navigationItem.leftBarButtonItem?.tintColor = oppositeColor
-           
-           // Update right bar button item color
-           if let switchButton = navigationItem.rightBarButtonItem {
-               switchButton.tintColor = oppositeColor
-           }
+        
+        // Update right bar button item color
+        if let switchButton = navigationItem.rightBarButtonItem {
+            switchButton.tintColor = oppositeColor
+        }
         view.backgroundColor = themeColor
         myTable.backgroundColor = themeColor
         myCollection.backgroundColor = themeColor
@@ -386,11 +383,12 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
                 self?.upcomingMoviesSelected()
                 self?.navigationController?.isNavigationBarHidden = false
                 self?.hideChildControllers()
-            case .theme :
-                print("hello")
-                ThemeManager.shared.toggleTheme()
-                
-            }
+                //            case .theme :
+                //                print("hello")
+                //                ThemeManager.shared.toggleTheme()
+                //
+                          }
+            
             self?.updateTheme()
         })
     }
