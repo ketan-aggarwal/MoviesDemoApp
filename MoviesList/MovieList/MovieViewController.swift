@@ -57,6 +57,8 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         fetchConfiguration(apiKey: apiKey)
         configureBarBtn()
         addChildControllers()
+       
+        NotificationCenter.default.addObserver(self, selector: #selector(handleThemeChange), name: ThemeManager.themeChangedNotification, object: nil)
         
         self.view.tintColor = .white
         self.navigationItem.setHidesBackButton(true, animated: false)
@@ -70,6 +72,13 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         NotificationCenter.default.addObserver(self, selector: #selector(saveScrollPosition), name: UIApplication.didEnterBackgroundNotification, object: nil)
         
     }
+    @objc private func handleThemeChange() {
+            // Update UI elements based on the new theme
+            updateTheme()
+        }
+    
+
+   
     
     private func addChildControllers(){
         addChild(infoController)
@@ -175,6 +184,7 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
                 self?.myCollection.contentOffset.y = self?.currentScrollPosition ?? 0
             }
         }
+        updateTheme()
     }
     
     
@@ -240,6 +250,7 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         }
         
         fetchMovies(apiKey: apiKey, url: url)
+        updateTheme()
     }
     
     func fetchMovies(apiKey: String,url:String){
@@ -278,18 +289,28 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MovieCell", for: indexPath) as! MovieCell
+        cell.updateTheme(ThemeManager.shared.currentTheme)
         let movie = movies![indexPath.row]
         cell.selectionStyle = .none
         cell.title?.text = movie.title ?? "hello"
         cell.desc?.text = movie.overview
         cell.rating?.text = String(movie.vote_average!)
+        cell.selectionStyle = .none
+        tableView.separatorStyle = .none
         
         if let url = interactor?.getUrlFor(posterPath: movie.poster_path) {
             cell.img.sd_setImage(with: url, placeholderImage: UIImage(named: "placeholderImage"))
         }
         return cell
     }
-    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 170  // Adjust the height as needed
+    }
+
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 170  // Adjust the estimated height as needed
+    }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let selectedMovie = movies?[indexPath.row] {
             passMovieData(selectedMovie)
@@ -302,6 +323,38 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         router?.navigateToMovieDetail(movie: movie)
     }
     
+    private func updateTheme(){
+        let theme = ThemeManager.shared.currentTheme
+        
+        // Update navigation bar color
+        let navigationBarColor: UIColor = (theme == .light) ? .black : .white
+        navigationController?.navigationBar.barTintColor = navigationBarColor
+        
+       
+   
+        
+        // Update the theme for MovieCells in the table view
+//        if let visibleIndexPaths = myTable.indexPathsForVisibleRows {
+//            for indexPath in visibleIndexPaths {
+//                if let cell = myTable.cellForRow(at: indexPath) as? MovieCell {
+//                    cell.updateTheme(theme)
+//                }
+//
+//            }
+//        }
+        
+//        let visibleCollectionCells = myCollection.visibleCells
+//           for cell in visibleCollectionCells {
+//               if let cell = cell as? CollectionViewCell {
+//                   cell.updateTheme(theme)
+//               }
+//           }
+        
+//
+        myTable.reloadData()
+        myCollection.reloadData()
+       
+    }
     
     func didSelectMenuItem(named: SideMenuItems) {
         sideMenu?.dismiss(animated: true, completion: { [weak self] in
@@ -325,12 +378,16 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
                 self?.upcomingMoviesSelected()
                 self?.navigationController?.isNavigationBarHidden = false
                 self?.hideChildControllers()
+            case .theme :
+                print("hello")
+                ThemeManager.shared.toggleTheme()
+               
             }
+            self?.updateTheme()
         })
     }
     
-    
-    
+   
     private func hideChildControllers() {
         infoController.view.isHidden = true
         signoutController.view.isHidden = true
@@ -348,7 +405,7 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         UserDefaults.standard.set(false, forKey: "isUserSignedIn")
         UserDefaults.standard.set(nil, forKey: "userName")
         UserDefaults.standard.set(nil, forKey: "userProfileImageURL")
-        print(SceneDelegate.shared)
+      
         GIDSignIn.sharedInstance.signOut()
         SceneDelegate.shared?.handleRootVC()
        
@@ -366,9 +423,9 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewCell", for: indexPath) as! CollectionViewCell
-        
         let movie = movies![indexPath.item]
         if let url = interactor?.getUrlFor(posterPath: movie.poster_path) {
+            cell.hiImg.frame = CGRect(x: 0, y: 0, width: cell.frame.width, height: cell.frame.height - 30)
             cell.hiImg.sd_setImage(with: url, placeholderImage: UIImage(named: "placeholderImage"))
         }
         cell.hiTitle.text = movie.title ?? "ketan"
@@ -394,18 +451,20 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
 }
 
 extension MovieViewController: UICollectionViewDelegateFlowLayout {
-    
+ 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let padding: CGFloat = 10
+        let padding: CGFloat = 5
         let collectionViewWidth = collectionView.bounds.width
-        let cellWidth = (collectionViewWidth - 5 * padding) / 3
+        let cellWidth = (collectionViewWidth - 6 * padding) / 3 // Adjusted padding for 3 tiles
+        
         let aspectRatio: CGFloat = 16.0 / 9.0
-        let cellHeight = cellWidth / aspectRatio
-        return CGSize(width: cellWidth, height: 180)
+//        let cellHeight = cellWidth / aspectRatio
+        //let cellHeight = cellWidth * (16.0 / 9.0) + 60
+        return CGSize(width: cellWidth, height: 230)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 25
+        return 20
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {

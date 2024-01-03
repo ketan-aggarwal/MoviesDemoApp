@@ -20,7 +20,31 @@ enum SideMenuItems: String, CaseIterable{
     case likedMovies = "Liked Movies"
     case info = "About Us"
     case signout = "Sign Out"
+    case theme = "Light/Dark"
     
+}
+class ArrowMenuCell: UITableViewCell {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setupCell()
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        setupCell()
+    }
+
+    private func setupCell() {
+        textLabel?.textColor = UIColor.white
+        backgroundColor = UIColor(red: 0.1, green: 0.1, blue: 0.1, alpha: 1.0)
+        selectionStyle = .none
+
+        let arrowImageView = UIImageView(image: UIImage(systemName: "arrow.right"))
+        arrowImageView.tintColor = UIColor.white
+        accessoryView = arrowImageView
+    }
+    
+   
 }
 
 class MenuController: UITableViewController{
@@ -35,7 +59,9 @@ class MenuController: UITableViewController{
         super.viewDidLoad()
         tableView.delegate = self
         tableView.dataSource = self
-        //view.backgroundColor = .darkGray
+       
+       tableView.register(ArrowMenuCell.self, forCellReuseIdentifier: "arrowCell")
+
         view.backgroundColor = UIColor(red: 0.1, green: 0.1, blue: 0.1, alpha: 1.0)
         tableView.separatorStyle = .none
            tableView.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -65,6 +91,8 @@ class MenuController: UITableViewController{
 //        navigationItem.titleView = containerView
 //    }
     private func createHeaderView() {
+        
+       
         // Create circular image view
         userImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
         userImageView?.contentMode = .scaleAspectFill
@@ -94,7 +122,12 @@ class MenuController: UITableViewController{
         let containerView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 60))
         containerView.addSubview(userImageView!)
         containerView.addSubview(userNameLabel!)
+        
         navigationItem.titleView = containerView
+    }
+    
+    @objc private func toggleTheme() {
+        ThemeManager.shared.toggleTheme()
     }
 
 
@@ -113,10 +146,11 @@ class MenuController: UITableViewController{
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "arrowCell", for: indexPath)
         cell.textLabel?.text = menuItems[indexPath.row].rawValue
         cell.selectionStyle = .none
         cell.backgroundColor = UIColor(red: 0.1, green: 0.1, blue: 0.1, alpha: 1.0)
+        
         return cell
     }
     

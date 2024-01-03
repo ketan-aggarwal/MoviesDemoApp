@@ -21,6 +21,21 @@ class CollectionViewCell: UICollectionViewCell {
           //hiTitle.font = UIFont(name: "Avenir-Medium", size: 20)
             hiTitle.textColor = .white
             hiTitle.numberOfLines = 2
+        
+        hiImg.contentMode = .scaleAspectFit
+               hiImg.clipsToBounds = true
+
+
+        }
+    func updateTheme(_ theme: Theme) {
+            // Update the appearance of MovieCell based on the theme
+            if theme == .dark {
+                backgroundColor = .black
+                hiTitle.textColor = .black
+            } else {
+                backgroundColor = .white
+                hiTitle.textColor = .white
+            }
         }
 
         

@@ -38,6 +38,8 @@ class MovieDetailWorker: MovieDetailWorkingLogic {
                         existingEntity.revenue = Int64(movieInfo.revenue ?? 0)
                         existingEntity.tagline = movieInfo.tagline
                         existingEntity.releaseDate = movieInfo.releaseDate
+                        existingEntity.title = movieInfo.originalTitle
+                        existingEntity.overview = movieInfo.overview
 
                     } else {
                         // Create new entity if it doesn't exist
@@ -50,6 +52,8 @@ class MovieDetailWorker: MovieDetailWorkingLogic {
                         movieInfoEntity.revenue = Int64(movieInfo.revenue ?? 0)
                         movieInfoEntity.tagline = movieInfo.tagline
                         movieInfoEntity.releaseDate = movieInfo.releaseDate
+                        movieInfoEntity.overview = movieInfo.overview
+                        movieInfoEntity.title = movieInfo.originalTitle
                         movieInfoEntity.isLiked = isLiked
 
                         print("New MovieInfo saved to CoreData")

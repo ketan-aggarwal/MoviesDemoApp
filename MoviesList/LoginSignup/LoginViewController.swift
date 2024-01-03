@@ -16,18 +16,18 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var loginBtn: UIButton!
     @IBOutlet weak var signupBtn: UIButton!
  
+    @IBOutlet weak var username: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        username.isHidden = true
 
-//        if UserDefaults.standard.bool(forKey: "isUserSignedIn") {
-//                navigateToMainScreen()
-//            }
-      //  observeAuthenticationState()
         addGradientBackground()
         passwordText.isSecureTextEntry = true
         emailText.attributedPlaceholder = NSAttributedString(string: "Email", attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
         passwordText.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
+        username.attributedPlaceholder = NSAttributedString(string: "Username", attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
+        username.textColor = .black
     }
 
     func observeAuthenticationState() {
@@ -91,16 +91,21 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func signupButtonTapped(_ sender: Any) {
-        guard let email = emailText.text, let password = passwordText.text else {
+        username.isHidden = false
+        guard let email = emailText.text, let password = passwordText.text, let userName = username.text else {
                    return
                }
-        
-        if(email.count == 0 || password.count == 0){
-            showAlert(message: "Email or Password Field Empty!")
+       
+        if(email.count == 0 || password.count == 0 || userName.count == 0){
+            showAlert(message: "Some Field is Empty!")
         }
         
         if !isValidEmail(email){
             showAlert(message: "Invalid Email")
+        }
+        
+        if !isUserNameValid(userName){
+            showAlert(message: "Username should have atleast 3 characters")
         }
         
         if !isPasswordValid(password) {
@@ -118,8 +123,27 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                        self.passwordText.text = ""
                        
                    }
+                   if let uid = Auth.auth().currentUser?.uid {
+                       self.storeUserInfo(uid: uid, email: email, username: userName)
+                              }
                }
+        username.isHidden = true
     }
+    func storeUserInfo(uid: String, email: String, username: String) {
+        let db = Firestore.firestore()
+
+        db.collection("users").document(uid).setData([
+            "email": email,
+            "username": username
+        ]) { error in
+            if let error = error {
+                print("Error storing user info: \(error.localizedDescription)")
+            } else {
+                print("User info stored successfully")
+            }
+        }
+    }
+
     
     @IBAction func googleSignIn(_ sender: Any) {
         GIDSignIn.sharedInstance.signIn(withPresenting: self) { signInResult, error in

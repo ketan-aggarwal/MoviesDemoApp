@@ -20,13 +20,14 @@ class MovieCell: UITableViewCell{
     @IBOutlet weak var sepView: UIView!
     
     override func awakeFromNib() {
+       
         img.layer.shadowColor = UIColor.black.cgColor
         img.layer.shadowOpacity = 0.5
         img.layer.shadowOffset = CGSize(width: 2, height: 2)
         img.layer.shadowRadius = 5
         img.layer.cornerRadius = 40
         img.clipsToBounds = true
-        
+      
         let gradientLayer = CAGradientLayer()
         gradientLayer.frame = sepView.bounds
         let topColor = UIColor.darkGray.cgColor
@@ -40,8 +41,22 @@ class MovieCell: UITableViewCell{
     
         title.textColor = .white
         title.backgroundColor = .clear
-        title.font = UIFont(name: "Avenir", size: 22)
-        title.font = UIFont.boldSystemFont(ofSize: 22)
+        title.font = UIFont(name: "Avenir", size: 20)
+        title.font = UIFont.boldSystemFont(ofSize: 20)
     }
    
+    
+    func updateTheme(_ theme: Theme) {
+            // Update the appearance of MovieCell based on the theme
+            if theme == .dark {
+              
+                backgroundColor = .black
+                title.textColor = .white
+                desc.textColor =  .white
+            } else {
+                backgroundColor = .white
+                title.textColor = .black
+                desc.textColor = .black
+            }
+        }
 }

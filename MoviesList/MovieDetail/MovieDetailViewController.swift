@@ -42,7 +42,7 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
         setup()
         setupPlayer()
         updateLikeButtonAppearance()
-        //configUI()
+        
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         self.navigationController?.navigationBar.tintColor = UIColor.white
 
@@ -104,16 +104,15 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
     
 
     func updateDescriptionLabel() {
-            guard let overview = dataStore?.selectedMovie?.overview else {
-                return
-            }
-
+        guard let overview = dataStore?.selectedMovie?.overview else{
+            return
+        }
             if isDescriptionExpanded {
                fullDesc.numberOfLines = 0
             } else {
                 fullDesc.numberOfLines = 2
             }
-            fullDesc.text = overview
+        fullDesc.text = overview
         }
    
 
@@ -226,6 +225,8 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
     
     func displayMovieInfo(viewModel: MovieDetailViewModels.MovieInfoViewModel) {
         FullTitle.text = dataStore?.selectedMovie?.title ?? "N/A"
+        //FullTitle.text = viewModel.movieInfo.originalTitle
+       // fullDesc.text = viewModel.movieInfo.overview
         updateDescriptionLabel()
         tagLabel.text = "\(viewModel.movieInfo.tagline ?? "No TagLine")"
 

@@ -83,7 +83,9 @@ struct MovieInfo: Codable {
     let tagline: String?
     let releaseDate: String?
     var isLiked: Bool?
- 
+    var originalTitle: String?
+    var overview : String?
+    
     enum CodingKeys: String, CodingKey {
         case spokenLanguages = "spoken_languages"
         case productionCountries = "production_countries"
@@ -92,6 +94,8 @@ struct MovieInfo: Codable {
         case tagline
         case releaseDate = "release_date"
         case isLiked
+        case originalTitle = "original_title"
+        case overview
     }
    
 }

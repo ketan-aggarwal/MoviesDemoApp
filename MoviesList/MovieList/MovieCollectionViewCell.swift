@@ -19,4 +19,16 @@ class MovieCollectionViewCell: UICollectionViewCell {
            titLabel.numberOfLines = 2
          
        }
+    func updateTheme(_ theme: Theme) {
+           
+            if theme == .dark {
+              
+                backgroundColor = .black
+             
+            } else {
+               
+                backgroundColor = .white
+                
+            }
+        }
 }

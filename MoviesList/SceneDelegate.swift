@@ -97,6 +97,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let movieDetailViewController = storyboard.instantiateViewController(withIdentifier: "MovieDetailViewController") as? MovieDetailViewController {
             // Pass the movie ID to the movie detail view controller
             movieDetailViewController.movieID = Int(movieID)
+           
             print("ketanis\(movieID)")
 
 
@@ -112,7 +113,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                rootViewController is UINavigationController {
                 // Push the movie detail view controller onto the existing navigation stack
                 if let navigationController = rootViewController as? UINavigationController {
-                    let movieDetail = Movie(title: , overview: nil, vote_average: nil, poster_path: nil, id: Int64(movieID))
+                    let movieDetail = Movie(title: "", overview: nil, vote_average: nil, poster_path: nil, id: Int64(movieID))
                     let dataStore = MovieDetailDataStoreImp()
                     dataStore.setupDataStore(movieDetail, apiKey: "e3d053e3f62984a4fa5d23b83eea3ce6")
                     let router = MovieDetailRouter(viewController: movieDetailViewController, dataStore: dataStore)

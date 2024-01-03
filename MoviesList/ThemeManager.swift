@@ -1,8 +1,23 @@
-//
-//  ThemeManager.swift
-//  MoviesList
-//
-//  Created by Ketan Aggarwal on 02/01/24.
-//
+import UIKit
 
-import Foundation
+enum Theme {
+    case light
+    case dark
+}
+
+class ThemeManager {
+    static let shared = ThemeManager()
+
+    var currentTheme: Theme = .dark {
+        didSet {
+            NotificationCenter.default.post(name: ThemeManager.themeChangedNotification, object: nil)
+        }
+    }
+
+    static let themeChangedNotification = Notification.Name("ThemeChangedNotification")
+
+    func toggleTheme() {
+        currentTheme = (currentTheme == .dark) ? .light : .dark
+    }
+
+    }
