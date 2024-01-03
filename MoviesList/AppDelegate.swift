@@ -82,20 +82,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       
 
     // MARK: UISceneSession Lifecycle
-    func navigationAppearance(){
-        let viewController = MovieViewController()
+    func navigationAppearance(themeColor: UIColor = .white){
+    
         if let font = UIFont(name: "HelveticaNeue-Light", size: 22) {
             var attributes: [NSAttributedString.Key: Any] = [
                 .font: font,
-                .foregroundColor: UIColor.white,
+                .foregroundColor: themeColor,
                 .shadow: NSShadow()
+                
             ]
+        
+//            UINavigationBar.appearance().backgroundColor = themeColor == .white ? .black : .white
+//
+//            let shadow = NSShadow()
+//            shadow.shadowColor = UIColor.gray
+//            shadow.shadowOffset = CGSize(width: 1, height: 1)
+//            attributes[.shadow] = shadow
+//            UINavigationBar.appearance().titleTextAttributes = attributes
             
-            let shadow = NSShadow()
-            shadow.shadowColor = UIColor.gray
-            shadow.shadowOffset = CGSize(width: 1, height: 1)
-            attributes[.shadow] = shadow
-            UINavigationBar.appearance().titleTextAttributes = attributes
+            let barAppearance = UINavigationBar.appearance()
+            barAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: themeColor]
+            barAppearance.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+            barAppearance.shadowImage = UIImage()
+            barAppearance.isTranslucent = true
         }
         
     }

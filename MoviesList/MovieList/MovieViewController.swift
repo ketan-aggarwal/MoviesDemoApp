@@ -60,7 +60,7 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
        
         NotificationCenter.default.addObserver(self, selector: #selector(handleThemeChange), name: ThemeManager.themeChangedNotification, object: nil)
         
-        self.view.tintColor = .white
+        self.view.tintColor = isDarkMode ? .black : .white
         self.navigationItem.setHidesBackButton(true, animated: false)
         let menu = MenuController(with: SideMenuItems.allCases)
         menu.delegate = self
@@ -72,13 +72,25 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         NotificationCenter.default.addObserver(self, selector: #selector(saveScrollPosition), name: UIApplication.didEnterBackgroundNotification, object: nil)
         
     }
-    @objc private func handleThemeChange() {
-            // Update UI elements based on the new theme
-            updateTheme()
-        }
     
-
-   
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        updateTheme()
+        ( UIApplication.shared.delegate as? AppDelegate)?.navigationAppearance(themeColor: isDarkMode ? .white : .black)
+       debugPrint("traitcollection called")
+        configureBarBtn()
+    }
+    
+    
+    
+    @objc private func handleThemeChange() {
+        // Update UI elements based on the new theme
+        updateTheme()
+    }
+    
+    
+    
     
     private func addChildControllers(){
         addChild(infoController)
@@ -156,16 +168,17 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
     
     func configureBarBtn() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "line.3.horizontal"), style: .plain ,target: self, action: #selector(yourAction))
-        navigationItem.leftBarButtonItem?.tintColor = .white
+        navigationItem.leftBarButtonItem?.tintColor = isDarkMode ? .white : .black
         
         let switchButton = UIBarButtonItem(image: UIImage(systemName: "square.grid.2x2"), style: .plain, target: self, action: #selector(switchView))
         navigationItem.rightBarButtonItem = switchButton
-        navigationItem.rightBarButtonItem?.tintColor = .white
+        navigationItem.rightBarButtonItem?.tintColor = isDarkMode ? .white : .black
         
         updateRightBarButton()
     }
     
     @objc func switchView(){
+      
         isTableView = !isTableView
         if isTableView {
             updateRightBarButton()
@@ -243,8 +256,10 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         
         
         let url: String
-        if navigationItem.title == "Popular Movies" {
-            url = "https://api.themoviedb.org/3/discover/movie?api_key=\(apiKey)&page=\(currentPage)"
+        
+            if navigationItem.title == "Popular Movies" {
+                url = "https://api.themoviedb.org/3/discover/movie?api_key=\(apiKey)&page=\(currentPage)"
+        
         } else {
             url = "https://api.themoviedb.org/3/movie/upcoming?api_key=\(apiKey)&page=\(currentPage)"
         }
@@ -289,7 +304,7 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MovieCell", for: indexPath) as! MovieCell
-        cell.updateTheme(ThemeManager.shared.currentTheme)
+        cell.updateTheme(isDarkMode ? .dark : .light)
         let movie = movies![indexPath.row]
         cell.selectionStyle = .none
         cell.title?.text = movie.title ?? "hello"
@@ -304,13 +319,13 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 170  // Adjust the height as needed
+        return 225 // Adjust the height as needed
     }
-
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 170  // Adjust the estimated height as needed
-    }
-
+    
+//    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+//        return 230  // Adjust the estimated height as needed
+//    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let selectedMovie = movies?[indexPath.row] {
             passMovieData(selectedMovie)
@@ -324,36 +339,29 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
     }
     
     private func updateTheme(){
-        let theme = ThemeManager.shared.currentTheme
+        let theme = isDarkMode
         
         // Update navigation bar color
-        let navigationBarColor: UIColor = (theme == .light) ? .black : .white
-        navigationController?.navigationBar.barTintColor = navigationBarColor
+        let themeColor: UIColor = (!theme) ? .white : .black
+        navigationController?.navigationBar.barTintColor = themeColor
+        let oppositeColor: UIColor = themeColor.isLight ? .black : .white
+        let titleTextAttributes: [NSAttributedString.Key: Any] = [
+               .foregroundColor: oppositeColor
+           ]
+           navigationController?.navigationBar.titleTextAttributes = titleTextAttributes
+        //navigationItem.leftBarButtonItem?.tintColor = oppositeColor
+           
+           // Update right bar button item color
+           if let switchButton = navigationItem.rightBarButtonItem {
+               switchButton.tintColor = oppositeColor
+           }
+        view.backgroundColor = themeColor
+        myTable.backgroundColor = themeColor
+        myCollection.backgroundColor = themeColor
         
-       
-   
-        
-        // Update the theme for MovieCells in the table view
-//        if let visibleIndexPaths = myTable.indexPathsForVisibleRows {
-//            for indexPath in visibleIndexPaths {
-//                if let cell = myTable.cellForRow(at: indexPath) as? MovieCell {
-//                    cell.updateTheme(theme)
-//                }
-//
-//            }
-//        }
-        
-//        let visibleCollectionCells = myCollection.visibleCells
-//           for cell in visibleCollectionCells {
-//               if let cell = cell as? CollectionViewCell {
-//                   cell.updateTheme(theme)
-//               }
-//           }
-        
-//
         myTable.reloadData()
         myCollection.reloadData()
-       
+        
     }
     
     func didSelectMenuItem(named: SideMenuItems) {
@@ -381,17 +389,17 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
             case .theme :
                 print("hello")
                 ThemeManager.shared.toggleTheme()
-               
+                
             }
             self?.updateTheme()
         })
     }
     
-   
+    
     private func hideChildControllers() {
         infoController.view.isHidden = true
         signoutController.view.isHidden = true
-       likedController.view.isHidden = true
+        likedController.view.isHidden = true
         
     }
     
@@ -405,16 +413,16 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         UserDefaults.standard.set(false, forKey: "isUserSignedIn")
         UserDefaults.standard.set(nil, forKey: "userName")
         UserDefaults.standard.set(nil, forKey: "userProfileImageURL")
-      
+        
         GIDSignIn.sharedInstance.signOut()
         SceneDelegate.shared?.handleRootVC()
-       
         
-       
-     //   self.navigationController?.popToRootViewController(animated: true)
-     
         
-       
+        
+        //   self.navigationController?.popToRootViewController(animated: true)
+        
+        
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -423,6 +431,7 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewCell", for: indexPath) as! CollectionViewCell
+        cell.updateTheme(isDarkMode ? .dark : .light)
         let movie = movies![indexPath.item]
         if let url = interactor?.getUrlFor(posterPath: movie.poster_path) {
             cell.hiImg.frame = CGRect(x: 0, y: 0, width: cell.frame.width, height: cell.frame.height - 30)
@@ -451,14 +460,14 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
 }
 
 extension MovieViewController: UICollectionViewDelegateFlowLayout {
- 
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let padding: CGFloat = 5
         let collectionViewWidth = collectionView.bounds.width
         let cellWidth = (collectionViewWidth - 6 * padding) / 3 // Adjusted padding for 3 tiles
         
         let aspectRatio: CGFloat = 16.0 / 9.0
-//        let cellHeight = cellWidth / aspectRatio
+        //        let cellHeight = cellWidth / aspectRatio
         //let cellHeight = cellWidth * (16.0 / 9.0) + 60
         return CGSize(width: cellWidth, height: 230)
     }
@@ -473,5 +482,17 @@ extension MovieViewController: UICollectionViewDelegateFlowLayout {
 }
 
 
-
+extension UIColor {
+    var isLight: Bool {
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+        
+        self.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        
+        let brightness = (red * 299 + green * 587 + blue * 114) / 1000
+        return brightness > 0.5
+    }
+}
 

@@ -42,7 +42,7 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
         setup()
         setupPlayer()
         updateLikeButtonAppearance()
-        
+        configureBarBtn()
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         self.navigationController?.navigationBar.tintColor = UIColor.white
 
@@ -54,7 +54,7 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
         detailTable.separatorStyle = .none
         shareImg.image = UIImage(systemName: "square.and.arrow.up")
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "arrow.clockwise"), style: .plain, target: self, action: #selector(refreshBtn))
+       
         
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(titleLabelTapped))
                fullDesc.isUserInteractionEnabled = true
@@ -64,6 +64,49 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
         let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(doubleTapAction))
                 doubleTapGesture.numberOfTapsRequired = 2
                 view.addGestureRecognizer(doubleTapGesture)
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+      
+        ( UIApplication.shared.delegate as? AppDelegate)?.navigationAppearance(themeColor: isDarkMode ? .white : .black)
+       debugPrint("traitcollection called")
+        configureBarBtn()
+    }
+    
+//    func inverseColor(_ color: UIColor) -> UIColor {
+//        var red: CGFloat = 0.0, green: CGFloat = 0.0, blue: CGFloat = 0.0, alpha: CGFloat = 0.0
+//        color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+//        
+//        let inverseColor = UIColor(red: 1.0 - red, green: 1.0 - green, blue: 1.0 - blue, alpha: alpha)
+//        
+//        return inverseColor
+//    }
+//    
+//    func updateNavigationBarColors() {
+//        let barButtonColor: UIColor = isDarkMode ? .white : .black
+//        let inverseBarButtonColor: UIColor = inverseColor(barButtonColor)
+//
+//        // Update left bar button item
+//        navigationItem.leftBarButtonItem?.tintColor = inverseBarButtonColor
+//
+//        // Update right bar button item
+//        configureBarBtn()
+//
+//        // Update other navigation bar items as needed
+//        // ...
+//
+//        // Update navigation bar title text color
+//        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: inverseBarButtonColor]
+//
+//        // Update navigation bar tint color
+//        navigationController?.navigationBar.tintColor = inverseBarButtonColor
+//    }
+    
+    func configureBarBtn(){
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "arrow.clockwise"), style: .plain, target: self, action: #selector(refreshBtn))
+        //updateNavigationBarColors()
     }
     
     @objc func doubleTapAction() {
@@ -279,6 +322,7 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
        
     }
 }
+
 
 
 

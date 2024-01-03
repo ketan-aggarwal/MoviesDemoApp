@@ -31,10 +31,12 @@ class CollectionViewCell: UICollectionViewCell {
             // Update the appearance of MovieCell based on the theme
             if theme == .dark {
                 backgroundColor = .black
-                hiTitle.textColor = .black
+                hiTitle.textColor = .white
+                print("is dark")
             } else {
                 backgroundColor = .white
-                hiTitle.textColor = .white
+                hiTitle.textColor = .black
+                print("is light")
             }
         }
 
