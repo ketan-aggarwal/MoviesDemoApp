@@ -23,6 +23,7 @@
 		6D2AFBF92B45691F0004A767 /* ViewControllerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2AFBF82B45691F0004A767 /* ViewControllerUtility.swift */; };
 		6D2AFBFB2B4690080004A767 /* SideMenuHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2AFBFA2B4690080004A767 /* SideMenuHeaderView.swift */; };
 		6D2AFBFD2B4690210004A767 /* SideMenuHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6D2AFBFC2B4690210004A767 /* SideMenuHeaderView.xib */; };
+		6D2AFBFF2B46E1DD0004A767 /* HeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6D2AFBFE2B46E1DD0004A767 /* HeaderView.xib */; };
 		6D575A332AEC179700C4A738 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 6D575A322AEC179700C4A738 /* SDWebImageSwiftUI */; };
 		6D575A372AEFC1D500C4A738 /* ActivityIndicatorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D575A362AEFC1D500C4A738 /* ActivityIndicatorManager.swift */; };
 		6D5CAA872B22F33B007BBD6F /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D5CAA862B22F33B007BBD6F /* LoginViewController.swift */; };
@@ -101,6 +102,7 @@
 		6D2AFBF82B45691F0004A767 /* ViewControllerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerUtility.swift; sourceTree = "<group>"; };
 		6D2AFBFA2B4690080004A767 /* SideMenuHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuHeaderView.swift; sourceTree = "<group>"; };
 		6D2AFBFC2B4690210004A767 /* SideMenuHeaderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SideMenuHeaderView.xib; sourceTree = "<group>"; };
+		6D2AFBFE2B46E1DD0004A767 /* HeaderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HeaderView.xib; sourceTree = "<group>"; };
 		6D575A362AEFC1D500C4A738 /* ActivityIndicatorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorManager.swift; sourceTree = "<group>"; };
 		6D5CAA862B22F33B007BBD6F /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		6D8E075E2B27224B00AA7DF4 /* SideMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenu.swift; sourceTree = "<group>"; };
@@ -279,6 +281,7 @@
 				6D8E075E2B27224B00AA7DF4 /* SideMenu.swift */,
 				6D2AFBFA2B4690080004A767 /* SideMenuHeaderView.swift */,
 				6D2AFBFC2B4690210004A767 /* SideMenuHeaderView.xib */,
+				6D2AFBFE2B46E1DD0004A767 /* HeaderView.xib */,
 				6D8E07602B2722C800AA7DF4 /* InfoViewController.swift */,
 				6D2AFBF42B4312660004A767 /* LikedMoviesViewController.swift */,
 				6D8E07622B2722D600AA7DF4 /* SignOutViewController.swift */,
@@ -439,6 +442,7 @@
 				6DDC7A1C2B2B0292000E3691 /* movies_app.html in Resources */,
 				6DD933ED2AEA820200D16DE4 /* Assets.xcassets in Resources */,
 				6D2AFBFD2B4690210004A767 /* SideMenuHeaderView.xib in Resources */,
+				6D2AFBFF2B46E1DD0004A767 /* HeaderView.xib in Resources */,
 				6DD933EB2AEA820000D16DE4 /* Main.storyboard in Resources */,
 				6D0C6EA72B2C4A96003072A8 /* MovieCollectionViewCell.xib in Resources */,
 			);

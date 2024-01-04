@@ -120,7 +120,7 @@ class MenuController: UITableViewController{
             // Pass the username and profile pic URL to setupUI function
             if let profilePicUrl = UserDataManager.shared.userProfileImageURL,
                let username = UserDataManager.shared.userName {
-                nib.setupUI(imageUrl: profilePicUrl.absoluteString, usernName: username)
+                nib.setupUI(imageUrl: profilePicUrl.absoluteString, username: username)
                 nib.translatesAutoresizingMaskIntoConstraints = false
             } else {
                 // Handle the case where username or profile pic URL is not available

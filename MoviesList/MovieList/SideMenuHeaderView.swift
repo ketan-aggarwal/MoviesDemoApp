@@ -11,26 +11,47 @@ class SideMenuHeaderView: UIView {
     
     
     @IBOutlet weak var userImage: UIImageView!
-    @IBOutlet weak var userName: UILabel!
+    
+    @IBOutlet weak var userNameLabel: UILabel!
     
     
-    func setupUI(imageUrl: String, usernName: String){
-       userImage?.layer.cornerRadius = userImage!.frame.width / 2
-        userImage?.clipsToBounds = true
-        
-        if let profilePicUrl = UserDataManager.shared.userProfileImageURL {
-            userImage?.sd_setImage(with: profilePicUrl, placeholderImage: UIImage(named: "defaultProfileImage"))
-        } else {
-            userImage.removeFromSuperview()
+    
+//    func setupUI(imageUrl: String, usernName: String){
+//       userImage?.layer.cornerRadius = userImage!.frame.width / 2
+//        userImage?.clipsToBounds = true
+//
+//        if let profilePicUrl = UserDataManager.shared.userProfileImageURL {
+//            userImage?.sd_setImage(with: profilePicUrl, placeholderImage: UIImage(named: "defaultProfileImage"))
+//        } else {
+//            userImage.removeFromSuperview()
+//        }
+//
+//        if let username = UserDataManager.shared.userName {
+//           userName.text = username
+//
+//            // userName.text = "Ketan Aggarwal ketan aggarwal"
+//
+//        }else{
+//
+//            userName.text = "Hi User"
+//        }
+//
+//    }
+    
+    func setupUI(imageUrl: String, username: String) {
+            userImage?.layer.cornerRadius = userImage!.frame.width / 2
+            userImage?.clipsToBounds = true
+
+            if let profilePicUrl = UserDataManager.shared.userProfileImageURL {
+                userImage?.sd_setImage(with: profilePicUrl, placeholderImage: UIImage(named: "defaultProfileImage"))
+            } else {
+                userImage.removeFromSuperview()
+            }
+
+            if let username = UserDataManager.shared.userName {
+                userNameLabel.text = username
+            } else {
+                userNameLabel.text = "Hi User"
+            }
         }
-        
-        if let username = UserDataManager.shared.userName {
-           // userName.text = username
-            userName.text = "Ketan Aggarwal ketan aggarwal"
-        }else{
-            
-            userName.text = "Hi User"
-        }
-        
-    }
 }
