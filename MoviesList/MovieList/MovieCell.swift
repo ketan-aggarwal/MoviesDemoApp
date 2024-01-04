@@ -21,19 +21,29 @@ class MovieCell: UITableViewCell{
     
     @IBOutlet weak var wrapperView: UIView!
     
+    @IBOutlet weak var imageGradient: UIView!
+    
     override func awakeFromNib() {
         
         img.layer.shadowColor = UIColor.black.cgColor
         img.layer.shadowOpacity = 0.5
         img.layer.shadowOffset = CGSize(width: 2, height: 2)
-        // img.layer.shadowRadius = 5
-        //img.layer.cornerRadius = 40
         img.clipsToBounds = true
+        img.layer.cornerRadius = 10
         wrapperView.layer.cornerRadius = 30
         
+        imageGradient.layer.cornerRadius = 10
+        imageGradient.clipsToBounds = true
         sepView.clipsToBounds = true
         sepView.layer.cornerRadius = 10
-        
+        let gradientLayer = CAGradientLayer()
+            gradientLayer.frame = imageGradient.bounds
+        let topColor = UIColor.clear.cgColor
+        let bottomColor = UIColor.black.cgColor
+               gradientLayer.colors = [topColor,bottomColor]
+               gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
+               gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
+        imageGradient.layer.insertSublayer(gradientLayer, at: 0)
         title.textColor = .white
         title.backgroundColor = .clear
         title.font = UIFont(name: "Avenir", size: 20)

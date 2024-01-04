@@ -324,7 +324,8 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 225 // Adjust the height as needed
+        return 188
+        // Adjust the height as needed
     }
     
     
