@@ -25,7 +25,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func handleRootVC(){
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            if UserDefaults.standard.bool(forKey: "isUserSignedIn") {
+            if (UserDefaults.standard.bool(forKey: "isUserSignedIn")) || (UserDefaults.standard.bool(forKey: "isUserloggedIn")){
                 let movieViewController = storyboard.instantiateViewController(withIdentifier: "MovieViewController") as! MovieViewController
                 let navigationController = UINavigationController(rootViewController: movieViewController)
                 window?.rootViewController = navigationController
@@ -70,36 +70,99 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     @objc func handleDeepLink(_ notification: Notification) {
             // Hxandle the deep link here
-            if let url = notification.userInfo?["url"] as? URL {
+//            if let url = notification.userInfo?["url"] as? URL {
+//                print("Handling deep link: \(url)")
+//                if let components = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+//                            if let host = components.host {
+//                                switch host {
+//                                case "movie":
+//
+//                                    if let movieID = components.queryItems?.first(where: { $0.name == "id" })?.value {
+//                                        print("Open movie with ID: \(movieID)")
+//                                        openMovieDetailPage(with: movieID)
+//                                    }
+//                                default:
+//                                    break
+//                                }
+//                            }
+//                        }
+//            }
+        
+        if let url = notification.userInfo?["url"] as? URL {
                 print("Handling deep link: \(url)")
                 if let components = URLComponents(url: url, resolvingAgainstBaseURL: false) {
-                            if let host = components.host {
-                                switch host {
-                                case "movie":
-                                   
-                                    if let movieID = components.queryItems?.first(where: { $0.name == "id" })?.value {
-                                        print("Open movie with ID: \(movieID)")
-                                        openMovieDetailPage(with: movieID)
-                                    }
-                                default:
-                                    break
-                                }
+                    if let host = components.host {
+                        switch host {
+                        case "movie":
+                            if let movieID = components.queryItems?.first(where: { $0.name == "id" })?.value,
+                               let movieTitle = components.queryItems?.first(where: { $0.name == "title" })?.value,
+                               let movieOverview = components.queryItems?.first(where: { $0.name == "overview" })?.value {
+                                print("Open movie with ID: \(movieID), Title: \(movieTitle), Overview: \(movieOverview)")
+                                openMovieDetailPage(with: movieID, title: movieTitle, overview: movieOverview)
                             }
+                        default:
+                            break
                         }
+                    }
+                }
             }
         }
         
     
-    func openMovieDetailPage(with movieID: String) {
+//    func openMovieDetailPage(with movieID: String) {
+//        // Assuming you have a storyboard identifier for the movie detail view controller
+//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//
+//        if let movieDetailViewController = storyboard.instantiateViewController(withIdentifier: "MovieDetailViewController") as? MovieDetailViewController {
+//            // Pass the movie ID to the movie detail view controller
+//            movieDetailViewController.movieID = Int(movieID)
+//
+//            print("ketanis\(movieID)")
+//
+//
+//            // Access the app's current window
+//            guard let window = UIApplication.shared.windows.first else {
+//                print("Error: Window is nil.")
+//                return
+//            }
+//
+//            // Check if the root view controller is a UINavigationController
+//
+//            if let rootViewController = window.rootViewController,
+//               rootViewController is UINavigationController {
+//                // Push the movie detail view controller onto the existing navigation stack
+//                if let navigationController = rootViewController as? UINavigationController {
+//
+//                    let dataStore = MovieDetailDataStoreImp()
+//                    let movieDetail = Movie(title: "", overview: nil, vote_average: nil, poster_path: nil, id: Int64(movieID))
+//
+//                    dataStore.setupDataStore(movieDetail, apiKey: "e3d053e3f62984a4fa5d23b83eea3ce6")
+//
+//                    let router = MovieDetailRouter(viewController: movieDetailViewController, dataStore: dataStore)
+//                    movieDetailViewController.dataStore = MovieDetailDataStoreImp()
+//                    movieDetailViewController.dataStore?.selectedMovie = movieDetail
+//                    movieDetailViewController.router = router
+//                    navigationController.pushViewController(movieDetailViewController, animated: true)
+//                }
+//            } else {
+//                let navigationController = UINavigationController(rootViewController: movieDetailViewController)
+//                window.rootViewController = navigationController
+//            }
+//        } else {
+//            // Handle the case where instantiation fails
+//            print("Error: Unable to instantiate MovieDetailViewController.")
+//        }
+//    }
+    
+    func openMovieDetailPage(with movieID: String, title: String, overview: String) {
         // Assuming you have a storyboard identifier for the movie detail view controller
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
         if let movieDetailViewController = storyboard.instantiateViewController(withIdentifier: "MovieDetailViewController") as? MovieDetailViewController {
-            // Pass the movie ID to the movie detail view controller
+            // Pass the movie ID, title, and overview to the movie detail view controller
             movieDetailViewController.movieID = Int(movieID)
-           
-            print("ketanis\(movieID)")
-
+            //movieDetailViewController.title = title
+            //movieDetailViewController.overview = overview
 
             // Access the app's current window
             guard let window = UIApplication.shared.windows.first else {
@@ -108,14 +171,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
 
             // Check if the root view controller is a UINavigationController
-     
             if let rootViewController = window.rootViewController,
                rootViewController is UINavigationController {
                 // Push the movie detail view controller onto the existing navigation stack
                 if let navigationController = rootViewController as? UINavigationController {
-                    let movieDetail = Movie(title: "", overview: nil, vote_average: nil, poster_path: nil, id: Int64(movieID))
                     let dataStore = MovieDetailDataStoreImp()
+                    let movieDetail = Movie(title: title, overview: overview, vote_average: nil, poster_path: nil, id: Int64(movieID))
                     dataStore.setupDataStore(movieDetail, apiKey: "e3d053e3f62984a4fa5d23b83eea3ce6")
+
                     let router = MovieDetailRouter(viewController: movieDetailViewController, dataStore: dataStore)
                     movieDetailViewController.dataStore = MovieDetailDataStoreImp()
                     movieDetailViewController.dataStore?.selectedMovie = movieDetail
@@ -123,7 +186,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     navigationController.pushViewController(movieDetailViewController, animated: true)
                 }
             } else {
-                // If the root view controller is not a UINavigationController, create a new one
                 let navigationController = UINavigationController(rootViewController: movieDetailViewController)
                 window.rootViewController = navigationController
             }
@@ -132,7 +194,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             print("Error: Unable to instantiate MovieDetailViewController.")
         }
     }
- 
+
+    
+   
     func sceneWillResignActive(_ scene: UIScene) {
         // Called when the scene will move from an active state to an inactive state.
         // This may occur due to temporary interruptions (ex. an incoming phone call).

@@ -12,6 +12,7 @@ import SideMenu
 import GoogleSignIn
 import SafariServices
 import WebKit
+import FirebaseAuth
 
 
 
@@ -215,7 +216,11 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         
         let switchButton = UIBarButtonItem(image: image, style: .plain, target: self, action: action)
         navigationItem.rightBarButtonItem = switchButton
-        navigationItem.rightBarButtonItem?.tintColor = .white
+        if(isDarkMode){
+            navigationItem.rightBarButtonItem?.tintColor = .white
+        }else{
+            navigationItem.rightBarButtonItem?.tintColor = .black
+        }
     }
     
     
@@ -383,10 +388,7 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
                 self?.upcomingMoviesSelected()
                 self?.navigationController?.isNavigationBarHidden = false
                 self?.hideChildControllers()
-                //            case .theme :
-                //                print("hello")
-                //                ThemeManager.shared.toggleTheme()
-                //
+               
                           }
             
             self?.updateTheme()
@@ -409,18 +411,17 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
     func performSignOut(){
         
         UserDefaults.standard.set(false, forKey: "isUserSignedIn")
+        UserDefaults.standard.set(false, forKey: "isUserloggedIn")
         UserDefaults.standard.set(nil, forKey: "userName")
         UserDefaults.standard.set(nil, forKey: "userProfileImageURL")
-        
+        do{
+            try Auth.auth().signOut()
+        }catch{
+            print("Error while signing out!")
+        }
         GIDSignIn.sharedInstance.signOut()
         SceneDelegate.shared?.handleRootVC()
-        
-        
-        
-        //   self.navigationController?.popToRootViewController(animated: true)
-        
-        
-        
+       
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -471,7 +472,7 @@ extension MovieViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 20
+        return 10
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {

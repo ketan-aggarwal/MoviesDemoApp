@@ -44,7 +44,7 @@ class MovieListWorker: MovieListWorkingLogic {
 
     func fetchConfiguration(apiKey: String, completion: @escaping (ImageConfiguration?) -> Void) {
         let url = URL(string: "https://api.themoviedb.org/3/configuration?api_key=\(apiKey)")!
-
+        print("aggarwal\(url)")
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
             DispatchQueue.main.async {
                 if let error = error {

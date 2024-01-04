@@ -20,7 +20,6 @@ enum SideMenuItems: String, CaseIterable{
     case likedMovies = "Liked Movies"
     case info = "About Us"
     case signout = "Sign Out"
-    //case theme = "Light/Dark"
     
 }
 class ArrowMenuCell: UITableViewCell {
@@ -68,12 +67,9 @@ class MenuController: UITableViewController{
         createHeaderView()
         
     }
-
-//
-//    private func createHeaderView() {
-//
-//
-//         Create circular image view
+    
+ //   private func createHeaderView() {
+        // Create circular image view
 //        userImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
 //        userImageView?.contentMode = .scaleAspectFill
 //        userImageView?.layer.cornerRadius = userImageView!.frame.width / 2
@@ -83,68 +79,57 @@ class MenuController: UITableViewController{
 //        if let profilePicUrl = UserDataManager.shared.userProfileImageURL {
 //            userImageView?.sd_setImage(with: profilePicUrl, placeholderImage: UIImage(named: "defaultProfileImage"))
 //        } else {
-//            // Display a default image or no image for proprietary login
+//
 //            userImageView?.image = UIImage(named: "defaultProfileImage")
 //        }
 //
-//        userNameLabel = UILabel(frame: CGRect(x: 50, y: 0, width: 200, height: 40))
+//        userNameLabel = UILabel(frame: CGRect(x: 50, y: 0, width: 200, height: 60))
 //        userNameLabel?.textColor = .white
 //        userNameLabel?.font = UIFont.boldSystemFont(ofSize: 20)
 //        userNameLabel?.numberOfLines = 2
+//        userNameLabel?.lineBreakMode = .byWordWrapping
 //
-//        // Check if the user signed in with Google
+//
 //        if let userName = UserDataManager.shared.userName {
 //            userNameLabel?.text = userName
+//            let wordsCount = userName.components(separatedBy: .whitespacesAndNewlines).count
+//            if wordsCount <= 5 {
+//                userNameLabel?.numberOfLines = 1
+//            }
 //        } else {
-//            // Display a generic greeting for proprietary login
-//            userNameLabel?.text = "ketan Aggarwal Ketan Aggarwal"
+//
+//            userNameLabel?.text = "Hi User"
 //        }
 //
 //        let containerView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 60))
 //        containerView.addSubview(userImageView!)
 //        containerView.addSubview(userNameLabel!)
-//
-//        navigationItem.titleView = containerView
-//    }
-//
+
+    
+   // }
+    
     private func createHeaderView() {
-        // Create circular image view
-        userImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
-        userImageView?.contentMode = .scaleAspectFill
-        userImageView?.layer.cornerRadius = userImageView!.frame.width / 2
-        userImageView?.clipsToBounds = true
-
-        // Check if the user signed in with Google
-        if let profilePicUrl = UserDataManager.shared.userProfileImageURL {
-            userImageView?.sd_setImage(with: profilePicUrl, placeholderImage: UIImage(named: "defaultProfileImage"))
-        } else {
-            // Display a default image or no image for proprietary login
-            userImageView?.image = UIImage(named: "defaultProfileImage")
-        }
-
-        userNameLabel = UILabel(frame: CGRect(x: 50, y: 0, width: 200, height: 60)) // Increased the height
-        userNameLabel?.textColor = .white
-        userNameLabel?.font = UIFont.boldSystemFont(ofSize: 20)
-        userNameLabel?.numberOfLines = 2
-        userNameLabel?.lineBreakMode = .byWordWrapping // Ensure word wrapping
-
-        // Check if the user signed in with Google
-        if let userName = UserDataManager.shared.userName {
-            userNameLabel?.text = userName
-            let wordsCount = userName.components(separatedBy: .whitespacesAndNewlines).count
-            if wordsCount <= 5 {
-                userNameLabel?.numberOfLines = 1
+        if let sideMenuHeaderView = loadSideMenuHeaderView() {
+                navigationItem.titleView = sideMenuHeaderView
             }
-        } else {
-           
-            userNameLabel?.text = "ketan Aggarwal Ketan Aggarwal"
+    }
+    
+    private func loadSideMenuHeaderView() -> SideMenuHeaderView? {
+        if let nib = Bundle.main.loadNibNamed("SideMenuHeaderView", owner: nil, options: nil)?.first as? SideMenuHeaderView {
+            
+            // Pass the username and profile pic URL to setupUI function
+            if let profilePicUrl = UserDataManager.shared.userProfileImageURL,
+               let username = UserDataManager.shared.userName {
+                nib.setupUI(imageUrl: profilePicUrl.absoluteString, usernName: username)
+                nib.translatesAutoresizingMaskIntoConstraints = false
+            } else {
+                // Handle the case where username or profile pic URL is not available
+                print("Username or profile pic URL not available")
+            }
+
+            return nib
         }
-
-        let containerView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 60))
-        containerView.addSubview(userImageView!)
-        containerView.addSubview(userNameLabel!)
-
-        navigationItem.titleView = containerView
+        return nil
     }
 
    

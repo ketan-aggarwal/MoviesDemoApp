@@ -85,6 +85,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                 }
             } else {
                 // Login successful
+                UserDefaults.standard.set(true, forKey: "isUserloggedIn")
                 self.navigateToMainScreen()
             }
         }
@@ -96,20 +97,20 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                    return
                }
 
-        if(email.count == 0 || password.count == 0 || userName.count == 0){
-            showAlert(message: "Some Field is Empty!")
-        }
+//        if(email.count == 0 || password.count == 0 || userName.count == 0){
+//            showAlert(message: "Some Field is Empty!")
+//        }
 
         if !isValidEmail(email){
-            showAlert(message: "Invalid Email")
+            //showAlert(message: "Invalid Email")
         }
 
         if !isUserNameValid(userName){
-            showAlert(message: "Username should have atleast 3 characters")
+            //showAlert(message: "Username should have atleast 3 characters")
         }
 
         if !isPasswordValid(password) {
-            showAlert(message: "Password must be at least 6 characters long.")
+            //showAlert(message: "Password must be at least 6 characters long.")
             return
         }
 
@@ -127,6 +128,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                        self.storeUserInfo(uid: uid, email: email, username: userName)
                               }
                }
+        
+        
         username.isHidden = true
     }
     func storeUserInfo(uid: String, email: String, username: String) {

@@ -16,6 +16,9 @@ class InfoViewController: UIViewController {
         loadHTMLContent()
         navigationItem.rightBarButtonItem = nil
     }
+    override func viewWillAppear(_ animated: Bool) {
+        navigationItem.rightBarButtonItem = nil
+    }
 
     @objc func openSideMenu() {
         if let parent = parent as? MovieViewController {

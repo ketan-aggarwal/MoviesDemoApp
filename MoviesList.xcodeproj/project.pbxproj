@@ -21,6 +21,8 @@
 		6D2AFBF52B4312660004A767 /* LikedMoviesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2AFBF42B4312660004A767 /* LikedMoviesViewController.swift */; };
 		6D2AFBF72B4435E00004A767 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2AFBF62B4435E00004A767 /* ThemeManager.swift */; };
 		6D2AFBF92B45691F0004A767 /* ViewControllerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2AFBF82B45691F0004A767 /* ViewControllerUtility.swift */; };
+		6D2AFBFB2B4690080004A767 /* SideMenuHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2AFBFA2B4690080004A767 /* SideMenuHeaderView.swift */; };
+		6D2AFBFD2B4690210004A767 /* SideMenuHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6D2AFBFC2B4690210004A767 /* SideMenuHeaderView.xib */; };
 		6D575A332AEC179700C4A738 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 6D575A322AEC179700C4A738 /* SDWebImageSwiftUI */; };
 		6D575A372AEFC1D500C4A738 /* ActivityIndicatorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D575A362AEFC1D500C4A738 /* ActivityIndicatorManager.swift */; };
 		6D5CAA872B22F33B007BBD6F /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D5CAA862B22F33B007BBD6F /* LoginViewController.swift */; };
@@ -97,6 +99,8 @@
 		6D2AFBF42B4312660004A767 /* LikedMoviesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikedMoviesViewController.swift; sourceTree = "<group>"; };
 		6D2AFBF62B4435E00004A767 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		6D2AFBF82B45691F0004A767 /* ViewControllerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerUtility.swift; sourceTree = "<group>"; };
+		6D2AFBFA2B4690080004A767 /* SideMenuHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuHeaderView.swift; sourceTree = "<group>"; };
+		6D2AFBFC2B4690210004A767 /* SideMenuHeaderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SideMenuHeaderView.xib; sourceTree = "<group>"; };
 		6D575A362AEFC1D500C4A738 /* ActivityIndicatorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorManager.swift; sourceTree = "<group>"; };
 		6D5CAA862B22F33B007BBD6F /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		6D8E075E2B27224B00AA7DF4 /* SideMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenu.swift; sourceTree = "<group>"; };
@@ -273,6 +277,8 @@
 				6D28A4ED2B32B3D9002AAD8D /* CollectionViewCell.swift */,
 				6D28A4EE2B32B3D9002AAD8D /* CollectionViewCell.xib */,
 				6D8E075E2B27224B00AA7DF4 /* SideMenu.swift */,
+				6D2AFBFA2B4690080004A767 /* SideMenuHeaderView.swift */,
+				6D2AFBFC2B4690210004A767 /* SideMenuHeaderView.xib */,
 				6D8E07602B2722C800AA7DF4 /* InfoViewController.swift */,
 				6D2AFBF42B4312660004A767 /* LikedMoviesViewController.swift */,
 				6D8E07622B2722D600AA7DF4 /* SignOutViewController.swift */,
@@ -432,6 +438,7 @@
 				6DECC9462B237BD4009F3216 /* GoogleService-Info.plist in Resources */,
 				6DDC7A1C2B2B0292000E3691 /* movies_app.html in Resources */,
 				6DD933ED2AEA820200D16DE4 /* Assets.xcassets in Resources */,
+				6D2AFBFD2B4690210004A767 /* SideMenuHeaderView.xib in Resources */,
 				6DD933EB2AEA820000D16DE4 /* Main.storyboard in Resources */,
 				6D0C6EA72B2C4A96003072A8 /* MovieCollectionViewCell.xib in Resources */,
 			);
@@ -576,6 +583,7 @@
 				6DEFF2652B0B2E1F0008A506 /* MovieDetailInteractor.swift in Sources */,
 				6D2AFBF52B4312660004A767 /* LikedMoviesViewController.swift in Sources */,
 				6DD9341A2AEA8CB100D16DE4 /* MovieCell.swift in Sources */,
+				6D2AFBFB2B4690080004A767 /* SideMenuHeaderView.swift in Sources */,
 				6D5CAA872B22F33B007BBD6F /* LoginViewController.swift in Sources */,
 				6D8E07612B2722C800AA7DF4 /* InfoViewController.swift in Sources */,
 				6DECC9442B2319AD009F3216 /* Validation.swift in Sources */,

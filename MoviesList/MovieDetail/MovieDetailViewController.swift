@@ -42,6 +42,7 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
         setup()
         setupPlayer()
         updateLikeButtonAppearance()
+        changeSharebtn()
         configureBarBtn()
         
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
@@ -53,11 +54,7 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
         interactor?.fetchTrailer(request: request)
         detailTable.rowHeight = UITableView.automaticDimension
         detailTable.separatorStyle = .none
-        if (isDarkMode){
-            shareImg.image = UIImage(systemName: "square.and.arrow.up")
-        }else{
-            shareImg.image = UIImage(systemName: "square.and.arrow.up")?.withTintColor(.black)
-        }
+       
       
         
         
@@ -76,8 +73,22 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
           super.viewWillAppear(animated)
           // Update navigation bar colors when the view is about to appear
           updateNavigationBarColors()
+        changeSharebtn()
       }
-    
+    func changeSharebtn(){
+        if (isDarkMode){
+            shareImg.image = UIImage(systemName: "square.and.arrow.up")
+            let templateImage = shareImg.image?.withRenderingMode(UIImage.RenderingMode.alwaysTemplate)
+            shareImg.image = templateImage
+            shareImg.tintColor = UIColor.white
+        }else{
+            shareImg.image = UIImage(systemName: "square.and.arrow.up")
+            let templateImage = shareImg.image?.withRenderingMode(UIImage.RenderingMode.alwaysTemplate)
+            shareImg.image = templateImage
+            shareImg.tintColor = UIColor.black
+           
+        }
+    }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
@@ -86,9 +97,10 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             // User interface style changed, update the theme colors
             updateNavigationBarColors()
+            changeSharebtn()
         }
         
-        // ... rest of your traitCollectionDidChange code
+       
     }
     func updateNavigationBarColors() {
         let isDarkMode: Bool = {
@@ -101,18 +113,13 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
         
         let barButtonColor: UIColor = isDarkMode ? .white : .black
         
-        // Update left bar button item
+      
         navigationItem.leftBarButtonItem?.tintColor = barButtonColor
         
-        // Update right bar button item
+     
         configureBarBtn()
-        let shareImageColor: UIColor = isDarkMode ? .white : .black
-            
-            if let shareImage = UIImage(systemName: "square.and.arrow.up")?.withTintColor(shareImageColor) {
-                DispatchQueue.main.async { [weak self] in
-                    self?.shareImg.image = shareImage
-                }
-            }
+        changeSharebtn()
+
         
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: barButtonColor]
         
@@ -178,16 +185,28 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
     
     
     @IBAction func shareMovie(_ sender: Any) {
-        guard let movieID = dataStore?.selectedMovie?.id else {
-            return
-        }
-        
-        // Construct the deep link URL using your custom scheme
-        if let deepLinkURL = createDeepLinkURL(movieID: Int(movieID)) {
-            // Create an activity view controller to share the deep link
-            let activityViewController = UIActivityViewController(activityItems: [deepLinkURL], applicationActivities: nil)
-            present(activityViewController, animated: true, completion: nil)
-        }
+//        guard let movieID = dataStore?.selectedMovie?.id else {
+//            return
+//        }
+//
+//        // Construct the deep link URL using your custom scheme
+//        if let deepLinkURL = createDeepLinkURL(movieID: Int(movieID)) {
+//            // Create an activity view controller to share the deep link
+//            let activityViewController = UIActivityViewController(activityItems: [deepLinkURL], applicationActivities: nil)
+//            present(activityViewController, animated: true, completion: nil)
+//        }
+        guard let movieID = dataStore?.selectedMovie?.id,
+              let movieTitle = dataStore?.selectedMovie?.title,
+              let movieOverview = dataStore?.selectedMovie?.overview else {
+                return
+            }
+
+            // Construct the deep link URL using your custom scheme
+            if let deepLinkURL = createDeepLinkURL(movieID: Int(movieID), movieTitle: movieTitle, movieOverview: movieOverview) {
+                // Create an activity view controller to share the deep link
+                let activityViewController = UIActivityViewController(activityItems: [deepLinkURL], applicationActivities: nil)
+                present(activityViewController, animated: true, completion: nil)
+            }
     }
     
     func updateLikedState(isLiked: Bool) {
@@ -311,12 +330,20 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
     
     
     
-    func createDeepLinkURL(movieID: Int) -> URL? {
-        // Construct your deep link URL using the custom scheme and necessary parameters
-        let deepLinkString = "moviesapp://movie?id=\(movieID)"
-        return URL(string: deepLinkString)
-    }
+//    func createDeepLinkURL(movieID: Int) -> URL? {
+//
+//        let deepLinkString = "moviesapp://movie?id=\(movieID)"
+//        return URL(string: deepLinkString)
+//    }
     
+    func createDeepLinkURL(movieID: Int, movieTitle: String, movieOverview: String) -> URL? {
+        // Construct your deep link URL using the custom scheme and necessary parameters
+        let encodedTitle = movieTitle.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+            let encodedOverview = movieOverview.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+            let deepLinkString = "moviesapp://movie?id=\(movieID)&title=\(encodedTitle)&overview=\(encodedOverview)"
+            return URL(string: deepLinkString)
+    }
+//
     func displayTrailer(viewModel: MovieDetailViewModels.MovieTrailerViewModel){
         DispatchQueue.main.async {
             ActivityIndicatorManager.shared.showActivityIndicator()
