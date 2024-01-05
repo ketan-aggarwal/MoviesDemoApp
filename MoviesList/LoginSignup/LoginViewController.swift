@@ -17,7 +17,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var signupBtn: UIButton!
 
     @IBOutlet weak var username: UITextField!
-
+    
+    
+    @IBOutlet weak var googleSignupBtn: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         username.isHidden = true
@@ -147,8 +150,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
     }
 
-
-    @IBAction func googleSignIn(_ sender: Any) {
+    @IBAction func googleLogIn(_ sender: Any) {
         GIDSignIn.sharedInstance.signIn(withPresenting: self) { signInResult, error in
                     guard error == nil else { return }
             guard let signInResult = signInResult else { return }
@@ -164,6 +166,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             UserDefaults.standard.set(true, forKey: "isUserSignedIn")
                       self.navigateToMainScreen()
                 }
+    }
+    
+    @IBAction func googleSignIn(_ sender: Any) {
+       print("hello")
 
     }
 

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class SideMenuHeaderView: UIView {
     
@@ -14,7 +15,11 @@ class SideMenuHeaderView: UIView {
     
     @IBOutlet weak var userNameLabel: UILabel!
     
-    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        userImage.layer.cornerRadius = userImage.frame.width / 2
+        userImage.clipsToBounds = true
+    }
     
 //    func setupUI(imageUrl: String, usernName: String){
 //       userImage?.layer.cornerRadius = userImage!.frame.width / 2

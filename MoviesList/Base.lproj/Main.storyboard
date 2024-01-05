@@ -292,7 +292,7 @@
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="xsb-0l-D0g"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.93085798249999996" green="0.99794776399999996" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="C7G-sJ-8Oj" firstAttribute="trailing" secondItem="xsb-0l-D0g" secondAttribute="trailing" id="14o-w9-sdk"/>
@@ -391,7 +391,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MrD-6h-VOP">
-                                <rect key="frame" x="209" y="446.33333333333331" width="84" height="34.333333333333314"/>
+                                <rect key="frame" x="191" y="446.33333333333331" width="84" height="34.333333333333314"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Sign Up"/>
                                 <connections>
@@ -399,30 +399,11 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="----or connect with----" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zQw-pl-IkN">
-                                <rect key="frame" x="110" y="539.66666666666663" width="183" height="21"/>
+                                <rect key="frame" x="110" y="539.66666666666663" width="165" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UEs-B4-ocv">
-                                <rect key="frame" x="66" y="577.66666666666663" width="261" height="34"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="  Sign in With Google" cornerStyle="capsule" titleAlignment="leading">
-                                    <backgroundConfiguration key="background"/>
-                                    <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </buttonConfiguration>
-                                <connections>
-                                    <action selector="googleSignIn:" destination="7MH-dV-bEM" eventType="touchUpInside" id="hh6-0F-LNd"/>
-                                </connections>
-                            </button>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="googleImg" translatesAutoresizingMaskIntoConstraints="NO" id="mlR-RL-taR">
-                                <rect key="frame" x="80" y="577.66666666666663" width="34" height="34"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="34" id="ImR-Xr-00a"/>
-                                    <constraint firstAttribute="width" constant="34" id="R0c-Gh-6eq"/>
-                                </constraints>
-                            </imageView>
                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="E7j-Gx-Isw">
                                 <rect key="frame" x="66" y="211.66666666666666" width="261" height="32.333333333333343"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -430,7 +411,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Log In" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e0B-8i-XJz">
-                                <rect key="frame" x="66" y="136" width="261" height="37"/>
+                                <rect key="frame" x="66" y="129" width="261" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="261" id="xaZ-vY-fLB"/>
                                 </constraints>
@@ -438,6 +419,26 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PoK-Rt-YAJ">
+                                <rect key="frame" x="66" y="580.66666666666663" width="261" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Sign In With Google">
+                                    <backgroundConfiguration key="background" cornerRadius="20">
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </backgroundConfiguration>
+                                    <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="googleLogIn:" destination="7MH-dV-bEM" eventType="touchUpInside" id="Axa-7S-byM"/>
+                                </connections>
+                            </button>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="googleImg" translatesAutoresizingMaskIntoConstraints="NO" id="JGH-On-4x2">
+                                <rect key="frame" x="80" y="580.66666666666663" width="34" height="34"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="34" id="PIm-Ay-LYk"/>
+                                    <constraint firstAttribute="width" constant="34" id="Q98-2m-F0T"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="A1L-Y2-dvi"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -445,35 +446,34 @@
                             <constraint firstItem="E7j-Gx-Isw" firstAttribute="leading" secondItem="sLV-Vo-USw" secondAttribute="leading" id="0hV-Tp-Hr0"/>
                             <constraint firstItem="zQw-pl-IkN" firstAttribute="trailing" secondItem="MrD-6h-VOP" secondAttribute="trailing" id="3Yu-w3-A1a"/>
                             <constraint firstItem="Xhk-8v-AEE" firstAttribute="top" secondItem="E7j-Gx-Isw" secondAttribute="bottom" constant="29" id="6Y1-DR-gnj"/>
-                            <constraint firstItem="UEs-B4-ocv" firstAttribute="leading" secondItem="mlR-RL-taR" secondAttribute="trailing" constant="-48" id="Fkm-q2-HMg"/>
+                            <constraint firstItem="PoK-Rt-YAJ" firstAttribute="leading" secondItem="JGH-On-4x2" secondAttribute="trailing" constant="-48" id="EHn-XG-f0t"/>
                             <constraint firstItem="zQw-pl-IkN" firstAttribute="leading" secondItem="GSB-pW-saT" secondAttribute="leading" id="HMw-OO-En8"/>
                             <constraint firstItem="MrD-6h-VOP" firstAttribute="top" secondItem="6WJ-Hv-CSb" secondAttribute="bottom" constant="1.6666666666666856" id="IWm-ha-wlA"/>
                             <constraint firstItem="E7j-Gx-Isw" firstAttribute="height" secondItem="V3a-G9-fXR" secondAttribute="height" multiplier="0.0399061" id="JbI-0s-go2"/>
                             <constraint firstItem="E7j-Gx-Isw" firstAttribute="top" secondItem="e0B-8i-XJz" secondAttribute="bottom" constant="38.666666666666657" id="MNq-3d-5kV"/>
-                            <constraint firstItem="UEs-B4-ocv" firstAttribute="top" secondItem="zQw-pl-IkN" secondAttribute="bottom" constant="17" id="MWF-xv-gTi"/>
                             <constraint firstItem="6WJ-Hv-CSb" firstAttribute="leading" secondItem="GSB-pW-saT" secondAttribute="trailing" constant="-141" id="O2v-ii-8fv"/>
                             <constraint firstItem="MrD-6h-VOP" firstAttribute="centerY" secondItem="GSB-pW-saT" secondAttribute="centerY" id="P3h-cw-nFs"/>
                             <constraint firstItem="6WJ-Hv-CSb" firstAttribute="centerX" secondItem="sLV-Vo-USw" secondAttribute="centerX" id="PHW-48-W82"/>
                             <constraint firstItem="Xhk-8v-AEE" firstAttribute="leading" secondItem="A1L-Y2-dvi" secondAttribute="leading" constant="66" id="Pyj-Jd-kJU"/>
                             <constraint firstItem="e0B-8i-XJz" firstAttribute="leading" secondItem="Xhk-8v-AEE" secondAttribute="leading" id="QAg-yU-QDi"/>
                             <constraint firstItem="sLV-Vo-USw" firstAttribute="leading" secondItem="Xhk-8v-AEE" secondAttribute="trailing" constant="-261" id="Rsk-QP-Op5"/>
-                            <constraint firstItem="UEs-B4-ocv" firstAttribute="leading" secondItem="sLV-Vo-USw" secondAttribute="leading" id="XzP-bQ-ywZ"/>
+                            <constraint firstItem="PoK-Rt-YAJ" firstAttribute="top" secondItem="JGH-On-4x2" secondAttribute="bottom" constant="-34" id="TjW-EM-UPa"/>
                             <constraint firstItem="sLV-Vo-USw" firstAttribute="width" secondItem="Xhk-8v-AEE" secondAttribute="width" id="a1x-by-ZSu"/>
-                            <constraint firstItem="mlR-RL-taR" firstAttribute="leading" secondItem="A1L-Y2-dvi" secondAttribute="leading" constant="80" id="a4r-id-dOn"/>
                             <constraint firstItem="sLV-Vo-USw" firstAttribute="leading" secondItem="Xhk-8v-AEE" secondAttribute="leading" id="cHS-vw-IlE"/>
                             <constraint firstItem="6WJ-Hv-CSb" firstAttribute="leading" secondItem="sLV-Vo-USw" secondAttribute="leading" id="d5f-8K-BAo"/>
                             <constraint firstItem="6WJ-Hv-CSb" firstAttribute="trailing" secondItem="sLV-Vo-USw" secondAttribute="trailing" id="d8L-Xt-skq"/>
-                            <constraint firstItem="mlR-RL-taR" firstAttribute="top" secondItem="zQw-pl-IkN" secondAttribute="bottom" constant="17" id="dh5-Po-rF0"/>
-                            <constraint firstItem="e0B-8i-XJz" firstAttribute="top" secondItem="A1L-Y2-dvi" secondAttribute="top" constant="45" id="eFR-Gu-KoR"/>
+                            <constraint firstItem="e0B-8i-XJz" firstAttribute="top" secondItem="A1L-Y2-dvi" secondAttribute="top" constant="38" id="eFR-Gu-KoR"/>
                             <constraint firstItem="A1L-Y2-dvi" firstAttribute="trailing" secondItem="MrD-6h-VOP" secondAttribute="trailing" constant="100" id="eJ7-xF-nYV"/>
+                            <constraint firstItem="PoK-Rt-YAJ" firstAttribute="leading" secondItem="sLV-Vo-USw" secondAttribute="leading" id="fcz-Sp-laf"/>
                             <constraint firstItem="E7j-Gx-Isw" firstAttribute="width" secondItem="Xhk-8v-AEE" secondAttribute="width" id="ggG-Ta-o9N"/>
                             <constraint firstItem="E7j-Gx-Isw" firstAttribute="trailing" secondItem="sLV-Vo-USw" secondAttribute="trailing" id="irG-gJ-CZM"/>
-                            <constraint firstItem="UEs-B4-ocv" firstAttribute="trailing" secondItem="sLV-Vo-USw" secondAttribute="trailing" id="ktp-6W-pFl"/>
                             <constraint firstItem="e0B-8i-XJz" firstAttribute="trailing" secondItem="Xhk-8v-AEE" secondAttribute="trailing" id="lRx-xS-5wA"/>
                             <constraint firstItem="A1L-Y2-dvi" firstAttribute="trailing" secondItem="Xhk-8v-AEE" secondAttribute="trailing" constant="66" id="lXD-tn-nD3"/>
                             <constraint firstItem="Xhk-8v-AEE" firstAttribute="top" secondItem="A1L-Y2-dvi" secondAttribute="top" constant="182" id="m2W-1p-re9"/>
                             <constraint firstItem="sLV-Vo-USw" firstAttribute="trailing" secondItem="Xhk-8v-AEE" secondAttribute="trailing" id="mlI-uB-z8X"/>
+                            <constraint firstItem="PoK-Rt-YAJ" firstAttribute="top" secondItem="zQw-pl-IkN" secondAttribute="bottom" constant="20" id="p2g-sS-bmj"/>
                             <constraint firstItem="6WJ-Hv-CSb" firstAttribute="top" secondItem="sLV-Vo-USw" secondAttribute="bottom" constant="40" id="rvK-fy-MoE"/>
+                            <constraint firstItem="PoK-Rt-YAJ" firstAttribute="trailing" secondItem="sLV-Vo-USw" secondAttribute="trailing" id="sLD-u4-zkW"/>
                             <constraint firstItem="GSB-pW-saT" firstAttribute="leading" secondItem="A1L-Y2-dvi" secondAttribute="leading" constant="110" id="unM-Dt-uxx"/>
                             <constraint firstItem="sLV-Vo-USw" firstAttribute="top" secondItem="Xhk-8v-AEE" secondAttribute="bottom" constant="29" id="wWI-he-Yib"/>
                             <constraint firstItem="zQw-pl-IkN" firstAttribute="top" secondItem="GSB-pW-saT" secondAttribute="bottom" constant="65.333333333333314" id="wxf-Un-mRn"/>
@@ -483,6 +483,7 @@
                     <navigationItem key="navigationItem" id="NAV-9N-QTg"/>
                     <connections>
                         <outlet property="emailText" destination="Xhk-8v-AEE" id="nYc-eD-jF8"/>
+                        <outlet property="googleSignupBtn" destination="PoK-Rt-YAJ" id="dbJ-qa-PDi"/>
                         <outlet property="loginBtn" destination="6WJ-Hv-CSb" id="KpH-ib-ht1"/>
                         <outlet property="passwordText" destination="sLV-Vo-USw" id="QCr-VO-6zU"/>
                         <outlet property="signupBtn" destination="MrD-6h-VOP" id="gLF-Vt-0nP"/>

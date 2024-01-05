@@ -373,21 +373,24 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
             case .popularMovies:
                 self?.popularMoviesSelected()
                 self?.navigationController?.isNavigationBarHidden = false
+                self?.updateRightBarButton()
                 self?.hideChildControllers()
             case .info:
                 self?.navigationController?.isNavigationBarHidden = false
                 self?.navigationItem.title = ""
+                self?.navigationItem.rightBarButtonItem = nil
                 self?.showChildController(controller: self!.infoController)
-            case .likedMovies:
-                print("Liked Movies")
-                self?.navigationController?.isNavigationBarHidden = false
-                self?.navigationItem.title = "Liked Movies"
-                self?.showChildController(controller: self!.likedController)
+//            case .likedMovies:
+//                print("Liked Movies")
+//                self?.navigationController?.isNavigationBarHidden = false
+//                self?.navigationItem.title = "Liked Movies"
+//                self?.showChildController(controller: self!.likedController)
             case .signout:
                 self?.performSignOut()
             case .upcomingMovies:
                 self?.upcomingMoviesSelected()
                 self?.navigationController?.isNavigationBarHidden = false
+                self?.updateRightBarButton()
                 self?.hideChildControllers()
                
                           }

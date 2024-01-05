@@ -17,7 +17,7 @@ protocol MenuControllerDelegate{
 enum SideMenuItems: String, CaseIterable{
     case popularMovies = "Popular Movies"
     case upcomingMovies = "Upcoming Movies"
-    case likedMovies = "Liked Movies"
+   // case likedMovies = "Liked Movies"
     case info = "About Us"
     case signout = "Sign Out"
     
