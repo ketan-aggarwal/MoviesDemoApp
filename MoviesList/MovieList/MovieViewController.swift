@@ -59,6 +59,7 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         configureBarBtn()
         addChildControllers()
         
+        
         NotificationCenter.default.addObserver(self, selector: #selector(handleThemeChange), name: ThemeManager.themeChangedNotification, object: nil)
         
         self.view.tintColor = isDarkMode ? .black : .white
@@ -73,6 +74,10 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         NotificationCenter.default.addObserver(self, selector: #selector(saveScrollPosition), name: UIApplication.didEnterBackgroundNotification, object: nil)
         
     }
+    
+//    override func viewWillAppear(_ animated: Bool) {
+//        switchView()
+//    }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
@@ -296,6 +301,8 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
             print("Movies count after update: \(self.movies?.count ?? 0)")
             self.myTable.reloadData()
             self.myCollection.reloadData()
+            
+            
         }
     }
     
@@ -436,12 +443,31 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewCell", for: indexPath) as! CollectionViewCell
         cell.updateTheme(isDarkMode ? .dark : .light)
         let movie = movies![indexPath.item]
+        
         if let url = interactor?.getUrlFor(posterPath: movie.poster_path) {
-            cell.hiImg.frame = CGRect(x: 0, y: 0, width: cell.frame.width, height: cell.frame.height - 30)
-            cell.hiImg.sd_setImage(with: url, placeholderImage: UIImage(named: "placeholderImage"))
+            
+            //            cell.hiImg.sd_setImage(with: url, placeholderImage: UIImage(named: "placeholderImage"))
+            cell.hiImg.sd_setImage(with: url, placeholderImage: UIImage(named: "placeholderImage")) { (image, error, cacheType, imageURL) in
+                        if let loadedImage = image, error == nil {
+                            let cellWidthPercentage: CGFloat = 0.33 // Adjust this percentage as needed
+                            let collectionViewWidth = collectionView.bounds.width
+                            let padding: CGFloat = 5
+                            let cellWidth = collectionViewWidth * cellWidthPercentage - 2 * padding
+                            let aspectRatio: CGFloat = 2/3
+                            let cellHeight = cellWidth / aspectRatio
+                            cell.hiImg.contentMode = .scaleAspectFit
+                            cell.hiImg.image = loadedImage
+                            cell.imageWidthConstraint.constant = cellWidth
+                            cell.hiImg.heightAnchor.constraint(equalToConstant: cellHeight).isActive = true
+                            cell.hiTitle.text = movie.title ?? "ketan"
+                }
+                
+            }
         }
         cell.hiTitle.text = movie.title ?? "ketan"
+        cell.hiImg.clipsToBounds = false
         return cell
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -463,25 +489,47 @@ class MovieViewController: UIViewController , MovieDisplayLogic, UITableViewDele
 }
 
 extension MovieViewController: UICollectionViewDelegateFlowLayout {
-    
+//
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+//        let padding: CGFloat = 5
+//        let collectionViewWidth = collectionView.bounds.width
+//        let cellWidth = (collectionViewWidth - 6 * padding) / 3 // Adjusted padding for 3 tiles
+//        print("cell width\(cellWidth)")
+//
+//        return CGSize(width: cellWidth, height: 230)
+//    }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let padding: CGFloat = 5
-        let collectionViewWidth = collectionView.bounds.width
-        let cellWidth = (collectionViewWidth - 6 * padding) / 3 // Adjusted padding for 3 tiles
-        
-        let aspectRatio: CGFloat = 16.0 / 9.0
-        //        let cellHeight = cellWidth / aspectRatio
-        //let cellHeight = cellWidth * (16.0 / 9.0) + 60
-        return CGSize(width: cellWidth, height: 230)
-    }
+            let cellWidthPercentage: CGFloat = 0.33 // Adjust this percentage as needed
+            let collectionViewWidth = collectionView.bounds.width
+            let padding: CGFloat = 5
+            let cellWidth = collectionViewWidth * cellWidthPercentage - 2 * padding
+            let aspectRatio: CGFloat = 2/3
+            let cellHeight = cellWidth / aspectRatio
+        print("cell width\(cellWidth)")
+            return CGSize(width: cellWidth, height: cellHeight)
+        }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 10
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 10
     }
+    
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+//            let collectionViewWidth = collectionView.bounds.width
+//            let dynamicLineSpacing: CGFloat = collectionViewWidth * 0.02 // Adjust this percentage as needed
+//        print("LineSpacing\(dynamicLineSpacing)")
+//            return dynamicLineSpacing
+//        }
+//
+//        func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+//            let collectionViewWidth = collectionView.bounds.width
+//            let dynamicInteritemSpacing: CGFloat = collectionViewWidth * 0.02 // Adjust this percentage as needed
+//             print("LineSpacing\(dynamicLineSpacing)")
+//            return dynamicInteritemSpacing
+//        }
 }
 
 

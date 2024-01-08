@@ -92,7 +92,7 @@ class MovieListInteractor: MovieBusinessLogic, MovieListDataStore {
         if let configuration = imageConfiguration,
            let posterPath = posterPath,
            let fullPosterURL = URL(string: configuration.base_url)?
-            .appendingPathComponent(configuration.poster_sizes[5])
+            .appendingPathComponent(configuration.poster_sizes[1])
             .appendingPathComponent(posterPath){
                     return fullPosterURL
         }

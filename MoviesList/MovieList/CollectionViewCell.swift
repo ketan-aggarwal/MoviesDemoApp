@@ -13,6 +13,10 @@ class CollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var hiTitle: UILabel!
     
     
+    @IBOutlet weak var widthConstraint: UIImageView!
+    
+    @IBOutlet weak var imageWidthConstraint: NSLayoutConstraint!
+    var collectionViewWidth: CGFloat = 120.0
     override func awakeFromNib() {
             super.awakeFromNib()
            
@@ -20,10 +24,12 @@ class CollectionViewCell: UICollectionViewCell {
             hiTitle.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
           //hiTitle.font = UIFont(name: "Avenir-Medium", size: 20)
             hiTitle.textColor = .white
-            hiTitle.numberOfLines = 2
+            hiTitle.numberOfLines = 1
         
         hiImg.contentMode = .scaleAspectFit
                hiImg.clipsToBounds = true
+        
+       // imageWidthConstraint.constant = collectionViewWidth
 
 
         }
@@ -35,7 +41,7 @@ class CollectionViewCell: UICollectionViewCell {
                 print("is dark")
             } else {
                 backgroundColor = .white
-                hiTitle.textColor = .black
+                hiTitle.textColor = .darkGray
                 print("is light")
             }
         }

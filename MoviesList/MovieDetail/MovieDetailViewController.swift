@@ -185,16 +185,6 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
     
     
     @IBAction func shareMovie(_ sender: Any) {
-//        guard let movieID = dataStore?.selectedMovie?.id else {
-//            return
-//        }
-//
-//        // Construct the deep link URL using your custom scheme
-//        if let deepLinkURL = createDeepLinkURL(movieID: Int(movieID)) {
-//            // Create an activity view controller to share the deep link
-//            let activityViewController = UIActivityViewController(activityItems: [deepLinkURL], applicationActivities: nil)
-//            present(activityViewController, animated: true, completion: nil)
-//        }
         guard let movieID = dataStore?.selectedMovie?.id,
               let movieTitle = dataStore?.selectedMovie?.title,
               let movieOverview = dataStore?.selectedMovie?.overview else {
@@ -306,8 +296,17 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
     
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 53
+        //return 53
+        
+        let screenHeight = UIScreen.main.bounds.height
+        let estimatedHeightProportion: CGFloat = 0.06 // Adjust this value based on your preference
+
+        return screenHeight * estimatedHeightProportion
     }
+    
+   
+   
+    
     func displayMovieInfo(viewModel: MovieDetailViewModels.MovieInfoViewModel) {
         FullTitle.text = dataStore?.selectedMovie?.title ?? "N/A"
         //FullTitle.text = viewModel.movieInfo.originalTitle
@@ -327,15 +326,7 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
             self.detailTable.reloadData()
         }
     }
-    
-    
-    
-//    func createDeepLinkURL(movieID: Int) -> URL? {
-//
-//        let deepLinkString = "moviesapp://movie?id=\(movieID)"
-//        return URL(string: deepLinkString)
-//    }
-    
+
     func createDeepLinkURL(movieID: Int, movieTitle: String, movieOverview: String) -> URL? {
         // Construct your deep link URL using the custom scheme and necessary parameters
         let encodedTitle = movieTitle.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
