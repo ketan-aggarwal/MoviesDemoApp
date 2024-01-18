@@ -46,76 +46,33 @@ class MovieListInteractor: MovieBusinessLogic, MovieListDataStore {
 
 
     
-//    func fetchMovies(request: MovieListModels.FetchMovies.Request, url: String) {
-//        worker.fetchMovies(apiKey: apiKey, currentPage: currentPage, url: url) { [weak self] newMovies in
-//            guard let self = self else { return }
-//
-//            if let newMovies = newMovies {
-//                if self.currentPage == 1 {
-//                    // Replace the existing movies array with the new movies
-//                    self.movies = newMovies
-//                } else {
-//                    // Append the new movies to the existing array
-//                    self.movies?.append(contentsOf: newMovies)
-//                }
-//
-//                if let firstMovie = newMovies.first {
-//                    self.selectedMovie = firstMovie
-//                    self.setMovieData(firstMovie)
-//                    print("Selected Movie: \(String(describing: self.selectedMovie))")
-//                }
-//
-//                let response = MovieListModels.FetchMovies.Response(movies: newMovies)
-//                self.presenter?.presentFetchMovies(response: response)
-//            }
-//        }
-//
-//    }
-//
-    
-       func fetchMovies(request: MovieListModels.FetchMovies.Request, url: String) {
-        worker.fetchMoviesFromCoreData { [weak self] moviesFromCoreData in
+    func fetchMovies(request: MovieListModels.FetchMovies.Request, url: String) {
+        worker.fetchMovies(apiKey: apiKey, currentPage: currentPage, url: url) { [weak self] newMovies in
             guard let self = self else { return }
 
-            if let moviesFromCoreData = moviesFromCoreData, !moviesFromCoreData.isEmpty {
-                // Update the movies array with the fetched movies from Core Data
-                self.movies = moviesFromCoreData
+            if let newMovies = newMovies {
+                if self.currentPage == 1 {
+                    // Replace the existing movies array with the new movies
+                    self.movies = newMovies
+                } else {
+                    // Append the new movies to the existing array
+                    self.movies?.append(contentsOf: newMovies)
+                }
 
-                if let firstMovie = moviesFromCoreData.first {
+                if let firstMovie = newMovies.first {
                     self.selectedMovie = firstMovie
                     self.setMovieData(firstMovie)
-                    print("Selected Movie: \(String(describing: self.selectedMovie))")
+                   
                 }
 
-                let response = MovieListModels.FetchMovies.Response(movies: moviesFromCoreData)
+                let response = MovieListModels.FetchMovies.Response(movies: newMovies)
                 self.presenter?.presentFetchMovies(response: response)
-            } else {
-                // No movies in Core Data, fetch from network
-                self.worker.fetchMovies(apiKey: self.apiKey, currentPage: self.currentPage, url: url) { [weak self] newMovies in
-                    guard let self = self else { return }
-
-                    if let newMovies = newMovies {
-                        // Save new movies to Core Data
-                        self.worker.saveMoviesToCoreData(movies: newMovies)
-
-                        // Update the movies array with the new movies
-                        self.movies = newMovies
-
-                        if let firstMovie = newMovies.first {
-                            self.selectedMovie = firstMovie
-                            self.setMovieData(firstMovie)
-                            print("Selected Movie: \(String(describing: self.selectedMovie))")
-                        }
-
-                        let response = MovieListModels.FetchMovies.Response(movies: newMovies)
-                        self.presenter?.presentFetchMovies(response: response)
-                    }
-                }
             }
         }
+
     }
     
-
+//
         
         func fetchConfiguration(request: MovieListModels.FetchImageConfiguration.Request) {
             worker.fetchConfiguration(apiKey: apiKey) { [weak self] configuration in
@@ -135,7 +92,7 @@ class MovieListInteractor: MovieBusinessLogic, MovieListDataStore {
         if let configuration = imageConfiguration,
            let posterPath = posterPath,
            let fullPosterURL = URL(string: configuration.base_url)?
-            .appendingPathComponent(configuration.poster_sizes[5])
+            .appendingPathComponent(configuration.poster_sizes[1])
             .appendingPathComponent(posterPath){
                     return fullPosterURL
         }

@@ -13,8 +13,6 @@ protocol MovieDetailRoutingLogic {
     var dataStore: MovieDetailDataStore {get set}
 }
 
-
-
 class MovieDetailRouter: MovieDetailRoutingLogic {
     
     var dataStore: MovieDetailDataStore

@@ -7,53 +7,130 @@
 
 import UIKit
 import CoreData
+import Firebase
+import GoogleSignIn
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
-
+    var window: UIWindow?
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-      
-        let viewController = MovieViewController()
-               if let font = UIFont(name: "HelveticaNeue-Light", size: 22) {
-                   var attributes: [NSAttributedString.Key: Any] = [
-                       .font: font,
-                       .foregroundColor: UIColor.white,
-                       .shadow: NSShadow()
-                   ]
-                   
-                   let shadow = NSShadow()
-                   shadow.shadowColor = UIColor.gray
-                   shadow.shadowOffset = CGSize(width: 1, height: 1)
-                   attributes[.shadow] = shadow
-                   UINavigationBar.appearance().titleTextAttributes = attributes
-               }
-      
+        
+        FirebaseApp.configure()
+        
+        navigationAppearance()
+        googleUserSignedIn()
+        if UserDefaults.standard.bool(forKey: "isUserSignedIn") {
+                if let storedUserName = UserDefaults.standard.string(forKey: "userName"),
+                   let storedProfileImageURLString = UserDefaults.standard.string(forKey: "userProfileImageURL"),
+                   let storedProfileImageURL = URL(string: storedProfileImageURLString) {
+
+                    // Set up your UI with stored user information
+                    UserDataManager.shared.userName = storedUserName
+                    UserDataManager.shared.userProfileImageURL = storedProfileImageURL
+                }
+            }
+//        DispatchQueue.main.async {
+//            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//            let window = UIWindow(frame: UIScreen.main.bounds)
+//
+//            if UserDefaults.standard.bool(forKey: "isUserSignedIn") {
+//                let movieViewController = storyboard.instantiateViewController(withIdentifier: "MovieViewController") as! MovieViewController
+//                let navigationController = UINavigationController(rootViewController: movieViewController)
+//                window.rootViewController = navigationController
+//            } else {
+//                let loginViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+//                let navigationController = UINavigationController(rootViewController: loginViewController)
+//                window.rootViewController = navigationController
+//            }
+//
+//            window.makeKeyAndVisible()
+//
+//            // Optional: Add a slight delay to the transition to ensure a smoother visual effect
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+//                UIView.transition(with: window, duration: 0.5, options: .transitionCrossDissolve, animations: nil, completion: nil)
+//            }
+//
+//            self.window = window
+//        }
+        
+        
+       
+        
+        
         print("Documents Directory: ", FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last ?? "Not Found!")
-        clearAllData()
         return true
     }
+        
+        func application(
+          _ app: UIApplication,
+          open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+        ) -> Bool {
+            
+          var handled: Bool
+            print("App delegate Deep link \(url)")
+            
+          handled = GIDSignIn.sharedInstance.handle(url)
+          if handled {
+            return true
+          }
+            
+            
+          return false
+        }
+      
 
     // MARK: UISceneSession Lifecycle
+    func navigationAppearance(themeColor: UIColor = .white){
+    
+        if let font = UIFont(name: "HelveticaNeue-Light", size: 22) {
+            var attributes: [NSAttributedString.Key: Any] = [
+                .font: font,
+                .foregroundColor: themeColor,
+                .shadow: NSShadow()
+                
+            ]
+        
+//            UINavigationBar.appearance().backgroundColor = themeColor == .white ? .black : .white
+//
+//            let shadow = NSShadow()
+//            shadow.shadowColor = UIColor.gray
+//            shadow.shadowOffset = CGSize(width: 1, height: 1)
+//            attributes[.shadow] = shadow
+//            UINavigationBar.appearance().titleTextAttributes = attributes
+            
+            let barAppearance = UINavigationBar.appearance()
+            barAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: themeColor]
+            barAppearance.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+            barAppearance.shadowImage = UIImage()
+            barAppearance.isTranslucent = true
+        }
+        
+    }
+    
+    func googleUserSignedIn(){
+        GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
+          if error != nil || user == nil {
+              UserDefaults.standard.set(false, forKey: "isUserSignedIn")
+          } else {
+              UserDefaults.standard.set(true, forKey: "isUserSignedIn")
+          }
+        }
+    }
+    
+   
 
-    func clearAllData() {
-        let context = CoreDataStack.shared.managedObjectContext // Replace with your Core Data stack
-
-        // Create a fetch request for all entities in your Core Data model
+    func clearAllMoviesFromCoreData() {
+        let context = CoreDataStack.shared.managedObjectContext
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "MovieEntity")
-
-        // Create a batch delete request with the fetch request
         let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
 
         do {
-            // Execute the batch delete request
             try context.execute(batchDeleteRequest)
-
-            // Save the context to persist the changes
             try context.save()
         } catch {
-            print("Error clearing Core Data: \(error.localizedDescription)")
+            print("Error clearing all movies from Core Data: \(error)")
         }
     }
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {

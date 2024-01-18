@@ -23,70 +23,190 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
     var interactor: MovieDetailBusinessLogic?
     var movieID: Int?
     var router: MovieDetailRoutingLogic?
+    var isDescriptionExpanded = false
     
     @IBOutlet weak var detailTable: UITableView!
     @IBOutlet weak var FullTitle: UILabel!
     @IBOutlet weak var tagLabel: UILabel!
     @IBOutlet weak var likeBtn: UIButton!
-    @IBOutlet weak var eyeBtn: UIButton!
+    //@IBOutlet weak var eyeBtn: UIButton!
     @IBOutlet weak var img: UIImageView!
-    @IBOutlet weak var eyeImg: UIImageView!
+    // @IBOutlet weak var eyeImg: UIImageView!
+    @IBOutlet weak var fullDesc: UILabel!
     
+    @IBOutlet weak var shareBtn: UIButton!
+    
+    @IBOutlet weak var shareImg: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
         setupPlayer()
         updateLikeButtonAppearance()
+        changeSharebtn()
+        configureBarBtn()
+        
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         self.navigationController?.navigationBar.tintColor = UIColor.white
-        eyeImg.image = UIImage(systemName: "eye")
-        eyeImg.tintColor = .white
+        
         let movieID =  (dataStore?.selectedMovie?.id ?? 0)
         let request = MovieDetailModel.FetchInfo.Request(apiKey: "e3d053e3f62984a4fa5d23b83eea3ce6", movieID: Int(movieID))
         interactor?.fetchMovieInfo(request: request)
         interactor?.fetchTrailer(request: request)
         detailTable.rowHeight = UITableView.automaticDimension
         detailTable.separatorStyle = .none
+       
+      
+        
+        
+        
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(titleLabelTapped))
+        fullDesc.isUserInteractionEnabled = true
+        fullDesc.addGestureRecognizer(tapGestureRecognizer)
+        
+        
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(doubleTapAction))
+        doubleTapGesture.numberOfTapsRequired = 2
+        view.addGestureRecognizer(doubleTapGesture)
     }
     
-    @IBAction func descBtn(_ sender: Any) {
-        guard let overview = dataStore?.selectedMovie?.overview else {
+    override func viewWillAppear(_ animated: Bool) {
+          super.viewWillAppear(animated)
+          // Update navigation bar colors when the view is about to appear
+          updateNavigationBarColors()
+        changeSharebtn()
+      }
+    func changeSharebtn(){
+        if (isDarkMode){
+            shareImg.image = UIImage(systemName: "square.and.arrow.up")
+            let templateImage = shareImg.image?.withRenderingMode(UIImage.RenderingMode.alwaysTemplate)
+            shareImg.image = templateImage
+            shareImg.tintColor = UIColor.white
+        }else{
+            shareImg.image = UIImage(systemName: "square.and.arrow.up")
+            let templateImage = shareImg.image?.withRenderingMode(UIImage.RenderingMode.alwaysTemplate)
+            shareImg.image = templateImage
+            shareImg.tintColor = UIColor.black
+           
+        }
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        // Check if the user interface style has changed
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            // User interface style changed, update the theme colors
+            updateNavigationBarColors()
+            changeSharebtn()
+        }
+        
+       
+    }
+    func updateNavigationBarColors() {
+        let isDarkMode: Bool = {
+            if #available(iOS 12.0, *) {
+                return self.traitCollection.userInterfaceStyle == .dark
+            } else {
+                return false
+            }
+        }()
+        
+        let barButtonColor: UIColor = isDarkMode ? .white : .black
+        
+      
+        navigationItem.leftBarButtonItem?.tintColor = barButtonColor
+        
+     
+        configureBarBtn()
+        changeSharebtn()
+
+        
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: barButtonColor]
+        
+        // Update navigation bar tint color
+        navigationController?.navigationBar.tintColor = barButtonColor
+    }
+    
+    
+    
+    func configureBarBtn(){
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "arrow.clockwise"), style: .plain, target: self, action: #selector(refreshBtn))
+        
+    }
+    
+    @objc func doubleTapAction() {
+        isLiked.toggle()
+        updateLikeButtonAppearance()
+        
+        if let movieInfo = dataStore?.selectedMovie {
+            interactor?.updateLikedState(movieID: Int(movieInfo.id!), isLiked: isLiked)
+            updateLikeButtonAppearance()
+        }
+    }
+    
+    @objc func titleLabelTapped() {
+        isDescriptionExpanded.toggle()
+        updateDescriptionLabel()
+    }
+    
+    func configUI(){
+        FullTitle.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        FullTitle.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        FullTitle.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        
+        // Set a minimum height for label1 (adjust as needed)
+        let minHeightConstraint = FullTitle.heightAnchor.constraint(greaterThanOrEqualToConstant: 50)
+        minHeightConstraint.priority = UILayoutPriority(999) // Set a high priority for the minimum height constraint
+        minHeightConstraint.isActive = true
+        
+        fullDesc.topAnchor.constraint(equalTo:FullTitle.bottomAnchor).isActive = true
+        fullDesc.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        fullDesc.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        fullDesc.heightAnchor.constraint(greaterThanOrEqualToConstant: 30).isActive = true
+        
+        detailTable.topAnchor.constraint(equalTo:  fullDesc.bottomAnchor).isActive = true
+        detailTable.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        detailTable.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        detailTable.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+    }
+    
+    
+    func updateDescriptionLabel() {
+        guard let overview = dataStore?.selectedMovie?.overview else{
             return
         }
-        let alert = UIAlertController(title: "Description\n", message: "", preferredStyle: .alert)
-        let messageFont = UIFont(name: "Arial", size: 18) ?? UIFont.systemFont(ofSize: 18)
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = .center
-        let attributedMessage = NSAttributedString(
-            string: overview,
-            attributes: [
-                NSAttributedString.Key.font: messageFont,
-                NSAttributedString.Key.paragraphStyle: paragraphStyle
-            ]
-        )
-        
-        alert.setValue(attributedMessage, forKey: "attributedMessage")
-        let dismissAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-        alert.addAction(dismissAction)
-        let animator = UIViewPropertyAnimator(duration: 0.2, curve: .easeInOut) {
-            self.present(alert, animated: true, completion: nil)
+        if isDescriptionExpanded {
+            fullDesc.numberOfLines = 0
+        } else {
+            fullDesc.numberOfLines = 2
         }
-        animator.addAnimations {
-            alert.view.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
-        }
-        animator.startAnimation()
+        fullDesc.text = overview
+    }
+    
+    
+    @IBAction func shareMovie(_ sender: Any) {
+        guard let movieID = dataStore?.selectedMovie?.id,
+              let movieTitle = dataStore?.selectedMovie?.title,
+              let movieOverview = dataStore?.selectedMovie?.overview else {
+                return
+            }
+
+            // Construct the deep link URL using your custom scheme
+            if let deepLinkURL = createDeepLinkURL(movieID: Int(movieID), movieTitle: movieTitle, movieOverview: movieOverview) {
+                // Create an activity view controller to share the deep link
+                let activityViewController = UIActivityViewController(activityItems: [deepLinkURL], applicationActivities: nil)
+                present(activityViewController, animated: true, completion: nil)
+            }
     }
     
     func updateLikedState(isLiked: Bool) {
-            // Implement your logic to update the UI based on the 'isLiked' state
-            // For example, you might want to update the appearance of your like button.
-            self.isLiked = isLiked
-           print("helllolll\(isLiked)")
-            updateLikeButtonAppearance()
-        }
+        self.isLiked = isLiked
+        print("helllolll\(isLiked)")
+        updateLikeButtonAppearance()
+    }
     
     @IBAction func likeBtn(_ sender: Any) {
-         isLiked.toggle()
+        isLiked.toggle()
         updateLikeButtonAppearance()
         
         if var movieInfo = dataStore?.selectedMovie {
@@ -96,9 +216,9 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
             interactor?.updateLikedState(movieID: Int(movieInfo.id!), isLiked: isLiked)
             updateLikeButtonAppearance()
         }
-
+        
     }
-
+    
     func updateLikeButtonAppearance() {
         if isLiked {
             DispatchQueue.main.async {
@@ -111,11 +231,9 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
                 self.img.image = UIImage(systemName: "heart")
                 self.likeBtn.tintColor = .red
             }
-           
+            
         }
     }
-    
-    
     
     func setupPlayer(){
         playerView = YTPlayerView()
@@ -143,6 +261,22 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
         presenter.movieDetailViewController = movieDetailviewController
     }
     
+    @objc func refreshBtn(_ sender: UIButton){
+        let movieID = dataStore?.selectedMovie?.id ?? 0
+        
+        // Save the current liked state
+        let currentLikedState = interactor?.getCurrentLikedState() ?? false
+        print("current state \(currentLikedState)")
+        
+        // Fetch movie info and trailer from the network
+        let request = MovieDetailModel.FetchInfo.Request(apiKey: "e3d053e3f62984a4fa5d23b83eea3ce6", movieID: Int(movieID))
+        interactor?.fetchTrailer(request: request)
+        interactor?.fetchMovieInfoFromNetwork(movieID: Int(movieID))
+        
+        // Always update the liked state
+        interactor?.updateLikedState(movieID: Int(movieID), isLiked: currentLikedState)
+    }
+    
     
     var labels: [String] = ["Languages:","Revenue:","Runtime:","Release Date:","Production Countries:"]
     var values: [String?] = [nil,nil,nil,nil,nil]
@@ -159,15 +293,33 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
         return cell
     }
     
+    
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        //return 53
+        
+        let screenHeight = UIScreen.main.bounds.height
+        let estimatedHeightProportion: CGFloat = 0.06 // Adjust this value based on your preference
+
+        return screenHeight * estimatedHeightProportion
+    }
+    
+   
+   
+    
     func displayMovieInfo(viewModel: MovieDetailViewModels.MovieInfoViewModel) {
         FullTitle.text = dataStore?.selectedMovie?.title ?? "N/A"
-        tagLabel.text = "# \(viewModel.movieInfo.tagline ?? "No TagLine")"
+        //FullTitle.text = viewModel.movieInfo.originalTitle
+        // fullDesc.text = viewModel.movieInfo.overview
+        updateDescriptionLabel()
+        tagLabel.text = "\(viewModel.movieInfo.tagline ?? "No TagLine")"
+        
         values = [
-            viewModel.movieInfo.spoken_languages?.first?.english_name ?? "N/A",
+            viewModel.movieInfo.spokenLanguages?.first?.englishName ?? "N/A",
             "\((viewModel.movieInfo.revenue).map{ String($0/1000000) } ?? "Nil") Mil.",
             "\((viewModel.movieInfo.runtime).map{ String($0) } ?? "Nil") Min.",
-            viewModel.movieInfo.release_date,
-            viewModel.movieInfo.production_countries?.first?.name ?? "N/A",
+            "\(viewModel.movieInfo.releaseDate ?? "N/A" )"  ,
+            viewModel.movieInfo.productionCountries?.first?.name ?? "N/A",
         ]
         
         DispatchQueue.main.async {
@@ -175,22 +327,25 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
         }
     }
 
-    
-
+    func createDeepLinkURL(movieID: Int, movieTitle: String, movieOverview: String) -> URL? {
+        // Construct your deep link URL using the custom scheme and necessary parameters
+        let encodedTitle = movieTitle.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+            let encodedOverview = movieOverview.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+            let deepLinkString = "moviesapp://movie?id=\(movieID)&title=\(encodedTitle)&overview=\(encodedOverview)"
+            return URL(string: deepLinkString)
+    }
+//
     func displayTrailer(viewModel: MovieDetailViewModels.MovieTrailerViewModel){
         DispatchQueue.main.async {
-               ActivityIndicatorManager.shared.showActivityIndicator()
-           }
+            ActivityIndicatorManager.shared.showActivityIndicator()
+        }
         if let trailer = viewModel.trailers.first, let key = trailer.key {
             print("YouTube Video ID: \(key)")
-           
-                DispatchQueue.main.async { [weak self] in
-                    self?.playerView.load(withVideoId: key)
-                    
-                }
             
-
-           //startMarqueeAnimation()
+            DispatchQueue.main.async { [weak self] in
+                self?.playerView.load(withVideoId: key)
+                
+            }
         } else {
             print("Invalid trailer key")
         }
@@ -205,9 +360,10 @@ class MovieDetailViewController: UIViewController , MovieDetailDisplayLogic, UIT
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        //stopMarqueeAnimation()
+        
     }
 }
+
 
 
 

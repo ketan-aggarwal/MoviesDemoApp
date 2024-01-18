@@ -2,7 +2,7 @@
 //  MovieInfoEntity+CoreDataProperties.swift
 //  
 //
-//  Created by Ketan Aggarwal on 07/12/23.
+//  Created by Ketan Aggarwal on 02/01/24.
 //
 //
 
@@ -16,13 +16,15 @@ extension MovieInfoEntity {
         return NSFetchRequest<MovieInfoEntity>(entityName: "MovieInfoEntity")
     }
 
+    @NSManaged public var id: Int64
     @NSManaged public var isLiked: Bool
     @NSManaged public var languages: String?
     @NSManaged public var productionCountries: String?
-    @NSManaged public var revenue: Int64
     @NSManaged public var releaseDate: String?
-    @NSManaged public var tagline: String?
+    @NSManaged public var revenue: Int64
     @NSManaged public var runtime: Int64
-    @NSManaged public var id: Int64
+    @NSManaged public var tagline: String?
+    @NSManaged public var title: String?
+    @NSManaged public var overview: String?
 
 }
